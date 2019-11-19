@@ -1,0 +1,19 @@
+{
+  "name": "analytics-panel",
+  "version": "0.0.1",
+  "description": "Grafana Analytics Panel",
+  "scripts": {
+    "build": "grafana-toolkit plugin:build",
+    "test": "grafana-toolkit plugin:test",
+    "dev": "grafana-toolkit plugin:dev",
+    "watch": "grafana-toolkit plugin:dev --watch"
+  },
+  "author": "Jacob Colvin",
+  "devDependencies": {
+    "@grafana/data": "6.4.3",
+    "@grafana/toolkit": "6.4.3",
+    "@grafana/ui": "6.4.3",
+    "@grafana/runtime": "6.4.3",
+    "@types/grafana": "github:CorpGlory/types-grafana.git"
+  }
+}

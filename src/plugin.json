@@ -1,0 +1,23 @@
+{
+  "type": "panel",
+  "name": "Analytics Panel",
+  "id": "analytics-panel",
+  "info": {
+    "description": "Analytics Panel",
+    "author": {
+      "name": "Jacob Colvin"
+    },
+    "keywords": ["Analytics"],
+    "logos": {
+      "small": "img/logo.svg",
+      "large": "img/logo.svg"
+    },
+    "screenshots": [],
+    "version": "%VERSION%",
+    "updated": "%TODAY%"
+  },
+  "dependencies": {
+    "grafanaVersion": "6.3.x",
+    "plugins": []
+  }
+}
