@@ -1,8 +1,7 @@
 import React, { PureComponent } from 'react';
-import { FormField } from '@grafana/ui';
-import { PanelEditorProps } from '@grafana/ui';
-
+import { FormField, Select, PanelOptionsGroup, PanelEditorProps } from '@grafana/ui';
 import { SimpleOptions } from './types';
+import { SelectableValue } from '@grafana/data/types/select';
 
 export class SimpleEditor extends PureComponent<PanelEditorProps<SimpleOptions>> {
   onServerChanged = ({ target }: any) => {
@@ -17,8 +16,9 @@ export class SimpleEditor extends PureComponent<PanelEditorProps<SimpleOptions>>
     this.props.onOptionsChange({ ...this.props.options, description: target.value });
   };
 
-  onHiddenChanged = ({ target }: any) => {
-    this.props.onOptionsChange({ ...this.props.options, hidden: target.value });
+  onHiddenChanged = (item: SelectableValue<string>) => {
+    const hide = item.value === 'True' ? true : false;
+    this.props.onOptionsChange({ ...this.props.options, hidden: hide });
   };
 
   componentWillMount() {
@@ -34,12 +34,11 @@ export class SimpleEditor extends PureComponent<PanelEditorProps<SimpleOptions>>
       options.description = url.replace(/^.+\/d\/.+\//g, '').replace(/\?.+$/g, '');
       this.props.onOptionsChange({ ...this.props.options });
     }
-
-    if (options.hidden === '') {
-      options.hidden = 'false';
-      this.props.onOptionsChange({ ...this.props.options });
-    }
   }
+
+  hValue = (): string => {
+    return this.props.options.hidden ? 'True' : 'False';
+  };
 
   render() {
     const { options } = this.props;
@@ -61,7 +60,16 @@ export class SimpleEditor extends PureComponent<PanelEditorProps<SimpleOptions>>
         />
         <br />
         <h5 className="section-heading">Display</h5>
-        <FormField label="Hidden" labelWidth={10} inputWidth={40} type="text" onChange={this.onHiddenChanged} value={options.hidden || ''} />
+        <PanelOptionsGroup title="Hidden">
+          <Select
+            value={{ value: this.hValue(), label: this.hValue() }}
+            onChange={this.onHiddenChanged}
+            options={[
+              { label: 'False', value: 'False' },
+              { label: 'True', value: 'True' },
+            ]}
+          />
+        </PanelOptionsGroup>
       </div>
     );
   }

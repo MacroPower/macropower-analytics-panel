@@ -41,13 +41,8 @@ export class SimplePanel extends PureComponent<Props> {
   render() {
     const { options, width, height } = this.props;
 
-    let display = true;
-    if (options.hidden === 'true') {
-      display = false;
-    }
-
     return (
-      display && (
+      !options.hidden && (
         <div
           style={{
             position: 'relative',
