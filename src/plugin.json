@@ -1,13 +1,13 @@
 {
   "type": "panel",
   "name": "Analytics Panel",
-  "id": "analytics-panel",
+  "id": "macropower-analytics-panel",
   "info": {
     "description": "Analytics Panel",
     "author": {
       "name": "Jacob Colvin"
     },
-    "keywords": ["Analytics"],
+    "keywords": ["analytics"],
     "logos": {
       "small": "img/logo.svg",
       "large": "img/logo.svg"
