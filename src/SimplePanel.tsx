@@ -12,29 +12,26 @@ function getDate() {
 export class SimplePanel extends PureComponent<Props> {
   state = {
     host: window.location.href.replace(/^.+\/\//g, '').replace(/\/.+$/g, ''),
-    time: undefined,
-    mode: undefined,
+    update: '',
     user: contextSrv.user,
   };
 
   componentDidMount() {
-    this.setState({ time: getDate(), mode: 0 });
-
     fetch(this.props.options.server, {
       method: 'POST',
-      body: JSON.stringify({ ...this.props.options, ...this.state }),
+      body: JSON.stringify({ ...this.props.options, ...this.state, ...{ time: getDate() } }),
       headers: {
         'Content-Type': 'application/json',
       },
-    });
+    })
+      .then(r => r.json())
+      .then(r => this.setState({ update: r.location }));
   }
 
   componentWillUnmount() {
-    this.setState({ time: getDate(), mode: 1 });
-
-    fetch(this.props.options.server, {
+    fetch(this.props.options.server + '/' + this.state.update, {
       method: 'POST',
-      body: JSON.stringify(this.state),
+      body: JSON.stringify({ ...this.props.options, ...this.state, ...{ time: getDate() } }),
       headers: {
         'Content-Type': 'application/json',
       },
