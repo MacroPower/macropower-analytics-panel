@@ -29,13 +29,17 @@ export class SimplePanel extends PureComponent<Props> {
   }
 
   componentWillUnmount() {
-    fetch(this.props.options.server + '/' + this.state.update, {
-      method: 'POST',
-      body: JSON.stringify({ ...this.props.options, ...this.state, ...{ time: getDate() } }),
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
+    const { options } = this.props;
+
+    if (options.postEnd) {
+      fetch(options.server + '/' + this.state.update, {
+        method: 'POST',
+        body: JSON.stringify({ ...options, ...this.state, ...{ time: getDate() } }),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+    }
   }
 
   render() {

@@ -3,6 +3,7 @@ export interface SimpleOptions {
   key: string;
   description: string;
   hidden: boolean;
+  postEnd: boolean;
 }
 
 export const defaults: SimpleOptions = {
@@ -10,4 +11,5 @@ export const defaults: SimpleOptions = {
   description: '',
   key: '',
   hidden: false,
+  postEnd: true,
 };

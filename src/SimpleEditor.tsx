@@ -21,6 +21,11 @@ export class SimpleEditor extends PureComponent<PanelEditorProps<SimpleOptions>>
     this.props.onOptionsChange({ ...this.props.options, hidden: hide });
   };
 
+  onPostEndChanged = (item: SelectableValue<string>) => {
+    const post = item.value === 'True' ? true : false;
+    this.props.onOptionsChange({ ...this.props.options, postEnd: post });
+  };
+
   componentWillMount() {
     const { options } = this.props;
     const url = window.location.href;
@@ -36,8 +41,8 @@ export class SimpleEditor extends PureComponent<PanelEditorProps<SimpleOptions>>
     }
   }
 
-  hValue = (): string => {
-    return this.props.options.hidden ? 'True' : 'False';
+  hValue = (b: boolean): string => {
+    return b ? 'True' : 'False';
   };
 
   render() {
@@ -59,10 +64,20 @@ export class SimpleEditor extends PureComponent<PanelEditorProps<SimpleOptions>>
           value={options.description || ''}
         />
         <br />
-        <h5 className="section-heading">Display</h5>
+        <PanelOptionsGroup title="Post End">
+          <Select
+            value={{ value: this.hValue(options.postEnd), label: this.hValue(options.postEnd) }}
+            onChange={this.onPostEndChanged}
+            options={[
+              { label: 'False', value: 'False' },
+              { label: 'True', value: 'True' },
+            ]}
+          />
+        </PanelOptionsGroup>
+        <br />
         <PanelOptionsGroup title="Hidden">
           <Select
-            value={{ value: this.hValue(), label: this.hValue() }}
+            value={{ value: this.hValue(options.hidden), label: this.hValue(options.hidden) }}
             onChange={this.onHiddenChanged}
             options={[
               { label: 'False', value: 'False' },
