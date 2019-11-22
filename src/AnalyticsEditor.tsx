@@ -1,9 +1,9 @@
 import React, { PureComponent } from 'react';
 import { FormField, Select, PanelOptionsGroup, PanelEditorProps } from '@grafana/ui';
-import { SimpleOptions } from './types';
+import { AnalyticsOptions } from './types';
 import { SelectableValue } from '@grafana/data/types/select';
 
-export class SimpleEditor extends PureComponent<PanelEditorProps<SimpleOptions>> {
+export class AnalyticsEditor extends PureComponent<PanelEditorProps<AnalyticsOptions>> {
   onServerChanged = ({ target }: any) => {
     this.props.onOptionsChange({ ...this.props.options, server: target.value });
   };

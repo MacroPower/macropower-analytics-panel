@@ -1,25 +1,31 @@
 import React, { PureComponent } from 'react';
 import { PanelProps } from '@grafana/ui';
-import { SimpleOptions } from 'types';
+import { AnalyticsOptions } from 'types';
 import { contextSrv } from 'grafana/app/core/core';
 
-interface Props extends PanelProps<SimpleOptions> {}
+interface Props extends PanelProps<AnalyticsOptions> {}
 
 function getDate() {
   return Math.floor(new Date().getTime() / 1000);
 }
 
-export class SimplePanel extends PureComponent<Props> {
+export class AnalyticsPanel extends PureComponent<Props> {
   state = {
     host: window.location.href.replace(/^.+\/\//g, '').replace(/\/.+$/g, ''),
     update: '',
     user: contextSrv.user,
   };
 
+  body = () => {
+    return { ...this.props.options, ...this.state, ...{ time: getDate() } };
+  };
+
   componentDidMount() {
-    fetch(this.props.options.server, {
+    const { options } = this.props;
+
+    fetch(options.server, {
       method: 'POST',
-      body: JSON.stringify({ ...this.props.options, ...this.state, ...{ time: getDate() } }),
+      body: JSON.stringify(this.body()),
       headers: {
         'Content-Type': 'application/json',
       },
@@ -34,7 +40,7 @@ export class SimplePanel extends PureComponent<Props> {
     if (options.postEnd) {
       fetch(options.server + '/' + this.state.update, {
         method: 'POST',
-        body: JSON.stringify({ ...options, ...this.state, ...{ time: getDate() } }),
+        body: JSON.stringify(this.body()),
         headers: {
           'Content-Type': 'application/json',
         },
@@ -54,7 +60,7 @@ export class SimplePanel extends PureComponent<Props> {
             height,
           }}
         >
-          <pre>{JSON.stringify({ ...options, ...this.state }, null, 1)}</pre>
+          <pre>{JSON.stringify(this.body(), null, 1)}</pre>
         </div>
       )
     );

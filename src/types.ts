@@ -1,4 +1,4 @@
-export interface SimpleOptions {
+export interface AnalyticsOptions {
   server: string;
   key: string;
   description: string;
@@ -6,7 +6,7 @@ export interface SimpleOptions {
   postEnd: boolean;
 }
 
-export const defaults: SimpleOptions = {
+export const defaults: AnalyticsOptions = {
   server: '',
   description: '',
   key: '',

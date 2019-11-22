@@ -3,11 +3,11 @@
   "name": "Analytics Panel",
   "id": "macropower-analytics-panel",
   "info": {
-    "description": "Analytics Panel",
+    "description": "Grafana Dashboard Analytics Panel",
     "author": {
       "name": "Jacob Colvin"
     },
-    "keywords": ["analytics"],
+    "keywords": ["dashboard","analytics","user","username"],
     "logos": {
       "small": "img/logo.svg",
       "large": "img/logo.svg"
