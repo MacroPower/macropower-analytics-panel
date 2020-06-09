@@ -13,7 +13,7 @@ export class AnalyticsPanel extends PureComponent<Props> {
   state = {
     host: window.location.href.replace(/^.+\/\//g, '').replace(/\/.+$/g, ''),
     update: '',
-    user: contextSrv.user,
+    ...contextSrv.user,
   };
 
   body = () => {
