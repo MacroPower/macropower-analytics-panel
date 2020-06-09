@@ -4,6 +4,7 @@ export interface AnalyticsOptions {
   description: string;
   hidden: boolean;
   postEnd: boolean;
+  cors: boolean;
 }
 
 export const defaults: AnalyticsOptions = {
@@ -12,4 +13,5 @@ export const defaults: AnalyticsOptions = {
   key: '',
   hidden: false,
   postEnd: true,
+  cors: true,
 };

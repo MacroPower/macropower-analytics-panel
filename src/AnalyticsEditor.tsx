@@ -28,6 +28,11 @@ export class AnalyticsEditor extends PureComponent<PanelEditorProps<AnalyticsOpt
     this.props.onOptionsChange({ ...this.props.options, postEnd: post });
   };
 
+  onCorsChanged = (item: SelectableValue<string>) => {
+    const cors = item.value === 'True' ? true : false;
+    this.props.onOptionsChange({ ...this.props.options, cors: cors });
+  };
+
   componentWillMount() {
     const { options } = this.props;
     const url = window.location.href;
@@ -98,6 +103,17 @@ export class AnalyticsEditor extends PureComponent<PanelEditorProps<AnalyticsOpt
             options={[
               { label: 'False', value: 'False' },
               { label: 'True', value: 'True' },
+            ]}
+          />
+        </PanelOptionsGroup>
+        <br />
+        <PanelOptionsGroup title="CORS">
+          <Select
+            value={{ value: this.hValue(options.cors), label: this.hValue(options.cors) }}
+            onChange={this.onCorsChanged}
+            options={[
+              { label: 'True', value: 'True' },
+              { label: 'False', value: 'False' },
             ]}
           />
         </PanelOptionsGroup>

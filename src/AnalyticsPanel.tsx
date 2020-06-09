@@ -25,6 +25,7 @@ export class AnalyticsPanel extends PureComponent<Props> {
 
     fetch(options.server, {
       method: 'POST',
+      mode: options.cors ? 'cors' : 'no-cors',
       body: JSON.stringify(this.body()),
       headers: {
         'Content-Type': 'application/json',
@@ -40,6 +41,7 @@ export class AnalyticsPanel extends PureComponent<Props> {
     if (options.postEnd) {
       fetch(options.server + '/' + this.state.update, {
         method: 'POST',
+        mode: options.cors ? 'cors' : 'no-cors',
         body: JSON.stringify(this.body()),
         headers: {
           'Content-Type': 'application/json',
