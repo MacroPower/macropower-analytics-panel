@@ -3,7 +3,7 @@
   "name": "Analytics Panel",
   "id": "macropower-analytics-panel",
   "info": {
-    "description": "Grafana Dashboard Analytics Panel",
+    "description": "Analytics Panel forwards data about your dashboard's users to an HTTP listener.",
     "author": {
       "name": "Jacob Colvin"
     },
@@ -16,7 +16,7 @@
       {"name": "Website", "url": "https://github.com/MacroPower/macropower-analytics-panel"}
     ],
     "screenshots": [],
-    "version": "0.0.2",
+    "version": "0.0.3",
     "updated": "2020-06-09"
   },
   "dependencies": {

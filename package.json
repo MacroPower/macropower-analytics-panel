@@ -1,6 +1,6 @@
 {
   "name": "analytics-panel",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Grafana Analytics Panel",
   "scripts": {
     "build": "grafana-toolkit plugin:build",
