@@ -20,7 +20,7 @@
     "updated": "2019-11-22"
   },
   "dependencies": {
-    "grafanaVersion": "6.3.x",
+    "grafanaVersion": "7.0.x",
     "plugins": []
   }
 }

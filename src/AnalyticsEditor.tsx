@@ -1,5 +1,7 @@
 import React, { PureComponent } from 'react';
-import { FormField, Select, PanelOptionsGroup, PanelEditorProps } from '@grafana/ui';
+import { LegacyForms, Select, PanelOptionsGroup } from '@grafana/ui';
+const { FormField } = LegacyForms;
+import { PanelEditorProps } from '@grafana/data';
 import { AnalyticsOptions } from './types';
 import { SelectableValue } from '@grafana/data/types/select';
 
@@ -51,10 +53,24 @@ export class AnalyticsEditor extends PureComponent<PanelEditorProps<AnalyticsOpt
     return (
       <div className="section gf-form-group">
         <h5 className="section-heading">Server</h5>
-        <FormField label="URL" labelWidth={10} inputWidth={40} type="text" onChange={this.onServerChanged} value={options.server || ''} />
+        <FormField
+          label="URL"
+          labelWidth={10}
+          inputWidth={40}
+          type="text"
+          onChange={this.onServerChanged}
+          value={options.server || ''}
+        />
         <br />
         <h5 className="section-heading">Settings</h5>
-        <FormField label="Unique ID" labelWidth={10} inputWidth={20} type="text" onChange={this.onKeyChanged} value={options.key || ''} />
+        <FormField
+          label="Unique ID"
+          labelWidth={10}
+          inputWidth={20}
+          type="text"
+          onChange={this.onKeyChanged}
+          value={options.key || ''}
+        />
         <FormField
           label="Description"
           labelWidth={10}

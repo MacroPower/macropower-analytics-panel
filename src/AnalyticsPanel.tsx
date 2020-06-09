@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import { PanelProps } from '@grafana/ui';
+import { PanelProps } from '@grafana/data';
 import { AnalyticsOptions } from 'types';
 import { contextSrv } from 'grafana/app/core/core';
 
