@@ -1,19 +1,31 @@
 {
   "name": "analytics-panel",
-  "version": "0.0.3",
+  "version": "1.0.0",
   "description": "Grafana Analytics Panel",
+  "license": "GPL-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/MacroPower/macropower-analytics-panel.git"
+  },
   "scripts": {
     "build": "grafana-toolkit plugin:build",
     "test": "grafana-toolkit plugin:test",
     "dev": "grafana-toolkit plugin:dev",
     "watch": "grafana-toolkit plugin:dev --watch"
   },
-  "author": "Jacob Colvin",
+  "author": {
+    "name": "Jacob Colvin",
+    "url": "https://jacobcolvin.com"
+  },
   "devDependencies": {
     "@grafana/data": "7.0.3",
     "@grafana/runtime": "7.0.3",
     "@grafana/toolkit": "7.0.3",
     "@grafana/ui": "7.0.3",
-    "@types/grafana": "github:CorpGlory/types-grafana"
+    "@types/grafana": "git+https://git@github.com/CorpGlory/types-grafana.git"
+  },
+  "dependencies": {
+    "@types/flat": "^5.0.1",
+    "flat": "^5.0.0"
   }
 }

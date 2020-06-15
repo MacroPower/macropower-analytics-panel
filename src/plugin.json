@@ -5,19 +5,33 @@
   "info": {
     "description": "Analytics Panel forwards data about your dashboard's users to an HTTP listener.",
     "author": {
-      "name": "Jacob Colvin"
+      "name": "Jacob Colvin",
+      "url": "https://jacobcolvin.com"
     },
-    "keywords": ["dashboard","analytics","user","username"],
+    "keywords": [
+      "dashboard",
+      "analytics",
+      "user",
+      "username",
+      "reports",
+      "report",
+      "reporting",
+      "track",
+      "tracking"
+    ],
     "logos": {
       "small": "img/logo.svg",
       "large": "img/logo.svg"
     },
     "links": [
-      {"name": "Website", "url": "https://github.com/MacroPower/macropower-analytics-panel"}
+      {
+        "name": "Website",
+        "url": "https://github.com/MacroPower/macropower-analytics-panel"
+      }
     ],
     "screenshots": [],
-    "version": "0.0.3",
-    "updated": "2020-06-09"
+    "version": "1.0.0",
+    "updated": "2020-06-15"
   },
   "dependencies": {
     "grafanaVersion": "7.0.x",

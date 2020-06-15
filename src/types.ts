@@ -1,17 +1,17 @@
+import { PanelProps } from '@grafana/data';
+
+export interface Props extends PanelProps<Options> {}
+
 export interface AnalyticsOptions {
   server: string;
   key: string;
   description: string;
   hidden: boolean;
   postEnd: boolean;
-  cors: boolean;
+  noCors: boolean;
+  flatten: boolean;
 }
 
-export const defaults: AnalyticsOptions = {
-  server: '',
-  description: '',
-  key: '',
-  hidden: false,
-  postEnd: true,
-  cors: true,
-};
+export interface Options {
+  analyticsOptions: AnalyticsOptions;
+}
