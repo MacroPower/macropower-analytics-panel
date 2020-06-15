@@ -16,13 +16,23 @@ export class AnalyticsPanel extends PureComponent<Props> {
 
   body = (): any => {
     const options = this.props.options.analyticsOptions;
+    const tr = this.props.timeRange;
+    const context = contextSrv.user;
+
+    const timeRange = {
+      from: tr.from.unix(),
+      to: tr.to.unix(),
+    };
+
+    const host = getDomainName(window.location.href);
+    const time = getDate();
 
     const result = {
-      ...{ options: options },
-      ...{ context: contextSrv.user },
-      ...{ timeRange: this.props.timeRange.raw },
-      ...{ time: getDate() },
-      ...{ host: getDomainName(window.location.href) },
+      ...{ options },
+      ...{ context },
+      ...{ timeRange },
+      ...{ host },
+      ...{ time },
     };
 
     if (options.flatten) {
