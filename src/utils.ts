@@ -15,3 +15,13 @@ export function getDomainName(str: string) {
 export function getDate() {
   return Math.floor(new Date().getTime() / 1000);
 }
+
+export function throwOnBadResponse(r: Response) {
+  const status = r.status.toString();
+  const regExp = /^(0)|(20[0-4])$/;
+
+  if (!regExp.test(status)) {
+    throw new Error(`Returned status ${status}`);
+  }
+  return r;
+}

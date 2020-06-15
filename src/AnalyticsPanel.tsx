@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react';
 import { Props } from 'types';
 import { contextSrv } from 'grafana/app/core/core';
-import { isValidUrl, getDomainName, getDate } from './utils';
+import { isValidUrl, getDomainName, getDate, throwOnBadResponse } from './utils';
 import { PLUGIN_NAME } from './constants';
 import { flatten } from 'flat';
 import { Button, JSONFormatter, ErrorWithStack } from '@grafana/ui';
@@ -32,8 +32,10 @@ export class AnalyticsPanel extends PureComponent<Props> {
     return result;
   };
 
-  request = (): RequestInit => {
+  getRequestInit = (): RequestInit => {
     const { noCors } = this.props.options.analyticsOptions;
+
+    this.setState({ error: undefined });
 
     return {
       method: 'POST',
@@ -49,19 +51,22 @@ export class AnalyticsPanel extends PureComponent<Props> {
     const { server, postEnd } = this.props.options.analyticsOptions;
 
     if (isValidUrl(server)) {
-      const req = fetch(server, this.request());
+      const req = fetch(server, this.getRequestInit());
 
       if (postEnd) {
         req
+          .then(r => throwOnBadResponse(r))
           .then(r => r.json())
           .then(r => this.setState({ update: r.location }))
           .catch((e: Error) => {
             this.setState({ error: e });
           });
       } else {
-        req.catch((e: Error) => {
-          this.setState({ error: e });
-        });
+        req
+          .then(r => throwOnBadResponse(r))
+          .catch((e: Error) => {
+            this.setState({ error: e });
+          });
       }
     } else {
       const error = new Error(`"${server}" is not a valid URL`);
@@ -75,10 +80,12 @@ export class AnalyticsPanel extends PureComponent<Props> {
 
     if (postEnd && update) {
       const url = server + '/' + update;
-      fetch(url, this.request()).catch((e: Error) => {
-        const error = `${PLUGIN_NAME} final payload error : ${e.name} : ${e.message}`;
-        console.log(error);
-      });
+      fetch(url, this.getRequestInit())
+        .then(r => throwOnBadResponse(r))
+        .catch((e: Error) => {
+          const error = `${PLUGIN_NAME} final payload error : ${e.name} : ${e.message}`;
+          console.log(error);
+        });
     }
   };
 
@@ -105,7 +112,13 @@ export class AnalyticsPanel extends PureComponent<Props> {
         }}
       >
         {error && (
-          <div style={{ display: 'inline-block', textAlign: 'center', width }}>
+          <div
+            style={{
+              display: 'inline-block',
+              textAlign: 'center',
+              width: '100%',
+            }}
+          >
             <ErrorWithStack title={`${PLUGIN_NAME} error`} error={error} errorInfo={null} />
             <Button onClick={() => this.sendInitPayload()}>Retry</Button>
           </div>
