@@ -25,7 +25,7 @@ You will need a server that accepts a JSON body identical to that provided by th
 
 ### Telegraf
 
-You can use Telegraf's `http_listener_v2` input to accept data from this plugin. An example configuration for this input can be found in the [example](tree/master/example) directory. This example is by no means perfect, and you will need to customize it to fit your specific use case.
+You can use Telegraf's `http_listener_v2` input to accept data from this plugin. An example configuration for this input can be found in the [example](https://github.com/MacroPower/macropower-analytics-panel/tree/master/example) directory. This example is by no means perfect, and you will need to customize it to fit your specific use case.
 
 The only major caveat with this approach is that you can no longer gather session duration, and thus you will need to ensure that the "post end" option is disabled on the Visualization page.
 
@@ -38,8 +38,6 @@ I used Kotlin w/ Spring with a MySQL database, but again, you may use anything y
 Your server should reply with `{location: <id>}` on record creation, where `id` is some unique value your backend associates to records. Your server will also need to accept the same JSON body at `youraddress/yourpath/{id}`. This signals that the user's connection has ended. You can use this to write a new entry, or append your last entry with an END timestamp. Note that this will not be sent if the user closes the tab/browser. If you don't want this functionality, you can disable it on the Visualization page.
 
 The panel itself will display the JSON body that will be sent (until it is hidden), so you should be able to write your models around that data.
-
-The other settings, "Unique ID" and "Description" are used to distinguish one dashboard from another. They will be auto populated when you load the Visualization page. Feel free to change them.
 
 ## The Panel
 
@@ -56,4 +54,4 @@ While you cannot place the panel inside a row, you can take several steps to mak
 
 If something is not working properly, the first thing you should do is look at your browser's console and network inspector. After opening the inspector, load a dashboard with an analytics-panel and take a look at the console, the request, and the response. In most cases, problems should be evident here.
 
-If you run into an issue you cannot solve, please post an [issue](issues) and I will do my best to look into your inquiry.
+If you run into an issue you cannot solve, please post an [issue](https://github.com/MacroPower/macropower-analytics-panel/issues) and I will do my best to look into your inquiry.
