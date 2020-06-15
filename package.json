@@ -11,7 +11,8 @@
     "build": "grafana-toolkit plugin:build",
     "test": "grafana-toolkit plugin:test",
     "dev": "grafana-toolkit plugin:dev",
-    "watch": "grafana-toolkit plugin:dev --watch"
+    "watch": "grafana-toolkit plugin:dev --watch",
+    "telegraf": "docker run -p 8080:8080 -v $INIT_CWD/example/telegraf.conf:/etc/telegraf/telegraf.conf telegraf:latest"
   },
   "author": {
     "name": "Jacob Colvin",
