@@ -27,7 +27,10 @@ You will need a server that accepts a JSON body identical to that provided by th
 
 You can use Telegraf's `http_listener_v2` input to accept data from this plugin. An example configuration for this input can be found in the [example](https://github.com/MacroPower/macropower-analytics-panel/tree/master/example) directory. This example is by no means perfect, and you will need to customize it to fit your specific use case.
 
-The only major caveat with this approach is that you can no longer gather session duration, and thus you will need to ensure that the "post end" option is disabled on the Visualization page.
+There are a few caveats with this approach:
+
+- you can no longer gather session duration
+- due to their structure, custom variables are not forwardable with "flatten" enabled.
 
 ### Custom
 
@@ -35,7 +38,7 @@ To fully utilize this plugin, you will need to design a custom service to accept
 
 I used Kotlin w/ Spring with a MySQL database, but again, you may use anything you want.
 
-Your server should reply with `{location: <id>}` on record creation, where `id` is some unique value your backend associates to records. Your server will also need to accept the same JSON body at `youraddress/yourpath/{id}`. This signals that the user's connection has ended. You can use this to write a new entry, or append your last entry with an END timestamp. Note that this will not be sent if the user closes the tab/browser. If you don't want this functionality, you can disable it on the Visualization page.
+Your server should reply with `{location: <id>}` on record creation, where `id` is some unique value your backend associates to records. Your server will also need to accept the same JSON body at `/arbitrary-path/{id}`. This signals that the user's connection has ended. You can use this to write a new entry, or append your last entry with an END timestamp. Note that this will not be sent if the user closes the tab/browser. If you don't want this functionality, you can disable it in the plugin settings.
 
 The panel itself will display the JSON body that will be sent (until it is hidden), so you should be able to write your models around that data.
 
