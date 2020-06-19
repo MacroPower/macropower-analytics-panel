@@ -1,10 +1,11 @@
 import React, { PureComponent } from 'react';
 import { Props } from 'types';
 import { contextSrv } from 'grafana/app/core/core';
-import { isValidUrl, getDomainName, getDate, throwOnBadResponse } from './utils';
+import { isValidUrl, getDomainName, getDate, throwOnBadResponse, getDashboard } from './utils';
 import { PLUGIN_NAME } from './constants';
 import { flatten } from 'flat';
 import { Button, JSONFormatter, ErrorWithStack } from '@grafana/ui';
+import { getTemplateSrv } from '@grafana/runtime';
 
 export class AnalyticsPanel extends PureComponent<Props> {
   state: {
@@ -17,19 +18,28 @@ export class AnalyticsPanel extends PureComponent<Props> {
   body = (): any => {
     const tr = this.props.timeRange;
     const timeRange = { from: tr.from.unix(), to: tr.to.unix() };
-    const host = getDomainName(window.location.href);
-    const environment = { host, timeRange };
+    const endpoint = getDomainName(window.location.href);
+
+    const templateSrv = getTemplateSrv();
+    const templateVars = templateSrv.getVariables();
+    const dashboard = getDashboard(templateSrv);
+
+    const variables = templateVars.map((v: any) => {
+      return { name: v.name, label: v.label, type: v.type, value: v.current.value };
+    });
+
+    const host = { endpoint };
+
+    const environment = { host, timeRange, dashboard };
 
     const options = this.props.options.analyticsOptions;
     const context = contextSrv.user;
     const time = getDate();
 
-    const result = { options, environment, context, time };
-
     if (options.flatten) {
-      return flatten(result);
+      return flatten({ options, environment, context, time });
     }
-    return result;
+    return { options, environment, context, variables, time };
   };
 
   getRequestInit = (): RequestInit => {

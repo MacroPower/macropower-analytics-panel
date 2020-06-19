@@ -6,8 +6,12 @@ import {
 import { AnalyticsPanel } from './AnalyticsPanel';
 import { Options } from './types';
 import { ENDPOINT_DEFAULT } from './constants';
+import { getDashboardName, getDashboard } from 'utils';
+import { getTemplateSrv } from '@grafana/runtime';
 
 const url = window.location.href;
+const key = getDashboard(getTemplateSrv()).uid;
+const name = getDashboardName(url);
 
 export const plugin = new PanelPlugin<Options>(AnalyticsPanel).setPanelOptions(
   (builder: PanelOptionsEditorBuilder<Options>) => {
@@ -21,13 +25,13 @@ export const plugin = new PanelPlugin<Options>(AnalyticsPanel).setPanelOptions(
       .addTextInput({
         path: 'analyticsOptions.key',
         name: 'Dashboard ID',
-        defaultValue: url.replace(/^.+\/d\//g, '').replace(/\/.+$/g, ''),
+        defaultValue: key,
         description: 'Unique value to identify the dashboard.',
       })
       .addTextInput({
         path: 'analyticsOptions.description',
         name: 'Dashboard Description',
-        defaultValue: url.replace(/^.+\/d\/.+\//g, '').replace(/\?.+$/g, ''),
+        defaultValue: name,
         description: 'Description of the dashboard.',
       })
       .addBooleanSwitch({

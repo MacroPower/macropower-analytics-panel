@@ -12,6 +12,19 @@ export function getDomainName(str: string) {
   return str.replace(/^.+\/\//g, '').replace(/\/.+$/g, '');
 }
 
+export function getDashboardName(str: string) {
+  return str.replace(/^.+\/d\/.+\//g, '').replace(/\?.+$/g, '');
+}
+
+export function getDashboard(template: any) {
+  const dashboardVars: { name: string; uid: string } = template.index.__dashboard.current.value;
+
+  return {
+    name: dashboardVars.name,
+    uid: dashboardVars.uid,
+  };
+}
+
 export function getDate() {
   return Math.floor(new Date().getTime() / 1000);
 }
