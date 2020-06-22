@@ -5,10 +5,11 @@ import {
 } from '@grafana/data';
 import { AnalyticsPanel } from './AnalyticsPanel';
 import { Options } from './types';
-import { ENDPOINT_DEFAULT } from './constants';
 import { getDashboardName, getDashboard } from 'utils';
 import { getTemplateSrv } from '@grafana/runtime';
+import defaults from './defaults.json';
 
+// set dynamic defaults
 const url = window.location.href;
 const key = getDashboard(getTemplateSrv()).uid;
 const name = getDashboardName(url);
@@ -19,7 +20,7 @@ export const plugin = new PanelPlugin<Options>(AnalyticsPanel).setPanelOptions(
       .addTextInput({
         path: 'analyticsOptions.server',
         name: 'Endpoint',
-        defaultValue: ENDPOINT_DEFAULT,
+        defaultValue: defaults.endpoint,
         description: 'Location to POST data on panel load.',
       })
       .addTextInput({
@@ -38,25 +39,25 @@ export const plugin = new PanelPlugin<Options>(AnalyticsPanel).setPanelOptions(
         path: 'analyticsOptions.hidden',
         name: 'Hide JSON',
         description: 'Hides the printed JSON object on the panel.',
-        defaultValue: false,
+        defaultValue: defaults.hidden,
       })
       .addBooleanSwitch({
         path: 'analyticsOptions.noCors',
         name: 'No CORS',
         description: 'Sets request mode to no-cors.',
-        defaultValue: false,
+        defaultValue: defaults.noCors,
       })
       .addBooleanSwitch({
         path: 'analyticsOptions.postEnd',
         name: 'Post End',
         description: 'Sends a second request when the panel is unloaded. Disable if you are using Telegraf.',
-        defaultValue: false,
+        defaultValue: defaults.postEnd,
       })
       .addBooleanSwitch({
         path: 'analyticsOptions.flatten',
         name: 'Flatten',
         description: 'Flattens the payload JSON. Enable if you are using Telegraf.',
-        defaultValue: true,
+        defaultValue: defaults.flatten,
       });
   }
 );
