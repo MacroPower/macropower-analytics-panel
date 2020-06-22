@@ -53,8 +53,16 @@ While you cannot place the panel inside a row, you can take several steps to mak
 - In General Settings, set Title/Description to nothing. Alternatively, you can set a Title/Description and use this panel as a title, separator, or footer.
 - Save and make the panel as small as you want. I found that 0 height, 100% width works well.
 
+## Default Settings
+
+If you are planning on including this panel on many or all of your dashboards, you may want to consider changing the default settings for analytics-panel. This can save you time, since you will not need to input the same endpoint and/or toggle some setting every time you add a new panel.
+
+You can edit defaults by changing the `dist/defaults.json` file. Note that changing this file will not change existing panels - defaults are _copied_ to the dashboard when the panel is added.
+
 ## Troubleshooting
 
 If something is not working properly, the first thing you should do is look at your browser's console and network inspector. After opening the inspector, load a dashboard with an analytics-panel and take a look at the console, the request, and the response. In most cases, problems should be evident here.
+
+In the event that you have many panels scattered across many dashboards, and suspect that some panels may be experiencing issues, you can sort your dashboards by "Errors Total - Most", or one of its variants. Note that errors are not thrown if json data is visible.
 
 If you run into an issue you cannot solve, please post an [issue](https://github.com/MacroPower/macropower-analytics-panel/issues) and I will do my best to look into your inquiry.
