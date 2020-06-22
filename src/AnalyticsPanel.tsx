@@ -18,7 +18,9 @@ export class AnalyticsPanel extends PureComponent<Props> {
   body = (): any => {
     const tr = this.props.timeRange;
     const timeRange = { from: tr.from.unix(), to: tr.to.unix() };
-    const endpoint = getDomainName(window.location.href);
+
+    const url = window.location.href;
+    const endpoint = getDomainName(url);
 
     const templateSrv = getTemplateSrv();
     const templateVars = templateSrv.getVariables();
@@ -31,9 +33,9 @@ export class AnalyticsPanel extends PureComponent<Props> {
     const host = { endpoint };
 
     const environment = { host, timeRange, dashboard };
-
     const options = this.props.options.analyticsOptions;
     const context = contextSrv.user;
+
     const time = getDate();
 
     if (options.flatten) {
@@ -90,12 +92,7 @@ export class AnalyticsPanel extends PureComponent<Props> {
 
     if (postEnd && update) {
       const url = server + '/' + update;
-      fetch(url, this.getRequestInit())
-        .then(r => throwOnBadResponse(r))
-        .catch((e: Error) => {
-          const error = `${PLUGIN_NAME} final payload error : ${e.name} : ${e.message}`;
-          console.log(error);
-        });
+      fetch(url, this.getRequestInit()).then(r => throwOnBadResponse(r));
     }
   };
 
@@ -109,8 +106,12 @@ export class AnalyticsPanel extends PureComponent<Props> {
 
   render() {
     const { width, height } = this.props;
-    const { analyticsOptions } = this.props.options;
+    const { hidden } = this.props.options.analyticsOptions;
     const { error } = this.state;
+
+    if (error && hidden) {
+      throw error;
+    }
 
     return (
       <div
@@ -133,7 +134,7 @@ export class AnalyticsPanel extends PureComponent<Props> {
             <Button onClick={() => this.sendInitPayload()}>Retry</Button>
           </div>
         )}
-        {!analyticsOptions.hidden && <JSONFormatter json={this.body()} />}
+        {!hidden && <JSONFormatter json={this.body()} />}
       </div>
     );
   }
