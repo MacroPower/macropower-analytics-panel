@@ -1,5 +1,11 @@
 # macropower-analytics-panel
 
+[![Downloads](https://img.shields.io/badge/dynamic/json?color=green&label=downloads&query=%24.downloads&url=https%3A%2F%2Fgrafana.com%2Fapi%2Fplugins%2Fmacropower-analytics-panel)](https://grafana.com/grafana/plugins/macropower-analytics-panel)
+![Grafana Version](https://img.shields.io/badge/dynamic/json?color=orange&label=grafana%20version&query=%24.json.dependencies.grafanaVersion&url=https%3A%2F%2Fgrafana.com%2Fapi%2Fplugins%2Fmacropower-analytics-panel)
+![Version](https://img.shields.io/badge/dynamic/json?color=blue&label=version&query=%24.version&url=https%3A%2F%2Fgrafana.com%2Fapi%2Fplugins%2Fmacropower-analytics-panel)
+![Updated](https://img.shields.io/badge/dynamic/json?color=lightgray&label=updated&query=%24.json.info.updated&url=https%3A%2F%2Fgrafana.com%2Fapi%2Fplugins%2Fmacropower-analytics-panel)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=MacroPower_macropower-analytics-panel&metric=alert_status)](https://sonarcloud.io/dashboard?id=MacroPower_macropower-analytics-panel)
+
 Grafana panel that forwards user data on mount &amp; unmount
 
 ## Features
