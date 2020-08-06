@@ -5,14 +5,12 @@ import {
 } from '@grafana/data';
 import { AnalyticsPanel } from './AnalyticsPanel';
 import { Options } from './types';
-import { getDashboardName, getDashboard } from 'utils';
-import { getTemplateSrv } from '@grafana/runtime';
+import { getDashboard } from 'utils';
 import defaults from './defaults.json';
 
 // set dynamic defaults
 const url = window.location.href;
-const key = getDashboard(getTemplateSrv()).uid;
-const name = getDashboardName(url);
+const dashboard = getDashboard(url);
 
 export const plugin = new PanelPlugin<Options>(AnalyticsPanel).setPanelOptions(
   (builder: PanelOptionsEditorBuilder<Options>) => {
@@ -26,13 +24,13 @@ export const plugin = new PanelPlugin<Options>(AnalyticsPanel).setPanelOptions(
       .addTextInput({
         path: 'analyticsOptions.key',
         name: 'Dashboard ID',
-        defaultValue: key,
+        defaultValue: dashboard.uid,
         description: 'Unique value to identify the dashboard.',
       })
       .addTextInput({
         path: 'analyticsOptions.description',
         name: 'Dashboard Description',
-        defaultValue: name,
+        defaultValue: dashboard.name,
         description: 'Description of the dashboard.',
       })
       .addBooleanSwitch({

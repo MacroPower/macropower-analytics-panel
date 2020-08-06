@@ -12,16 +12,18 @@ export function getDomainName(str: string) {
   return str.replace(/^.+\/\//g, '').replace(/\/.+$/g, '');
 }
 
-export function getDashboardName(str: string) {
+function getDashboardName(str: string) {
   return str.replace(/^.+\/d\/.+\//g, '').replace(/\?.+$/g, '');
 }
 
-export function getDashboard(template: any) {
-  const dashboardVars: { name: string; uid: string } = template.index.__dashboard.current.value;
+function getDashboardUID(str: string) {
+  return str.replace(/^.+\/d\//g, '').replace(/\/.+$/g, '');
+}
 
+export function getDashboard(template: string) {
   return {
-    name: dashboardVars.name,
-    uid: dashboardVars.uid,
+    name: getDashboardName(template),
+    uid: getDashboardUID(template),
   };
 }
 

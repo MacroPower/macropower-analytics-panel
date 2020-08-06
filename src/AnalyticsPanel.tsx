@@ -6,6 +6,7 @@ import { PLUGIN_NAME } from './constants';
 import { flatten } from 'flat';
 import { Button, JSONFormatter, ErrorWithStack } from '@grafana/ui';
 import { getTemplateSrv } from '@grafana/runtime';
+import { VariableModel, VariableType } from '@grafana/data/types/templateVars';
 
 export class AnalyticsPanel extends PureComponent<Props> {
   state: {
@@ -24,10 +25,25 @@ export class AnalyticsPanel extends PureComponent<Props> {
 
     const templateSrv = getTemplateSrv();
     const templateVars = templateSrv.getVariables();
-    const dashboard = getDashboard(templateSrv);
+    const dashboard = getDashboard(url);
 
-    const variables = templateVars.map((v: any) => {
-      return { name: v.name, label: v.label, type: v.type, value: v.current.value };
+    const variables: Array<{
+      name: string;
+      label: string | null;
+      type: VariableType;
+      value: string | null;
+    }> = templateVars.map((v: VariableModel) => {
+      // Note: any because VariableModel does not define current
+      const untypedVariableModel: any = v;
+
+      const value: string | undefined = untypedVariableModel?.current?.value;
+
+      return {
+        name: v.name,
+        label: v.label,
+        type: v.type,
+        value: value || null,
+      };
     });
 
     const host = { endpoint };
