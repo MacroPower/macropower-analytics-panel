@@ -1,4 +1,5 @@
 {
+  "serverType": "telegraf",
   "endpoint": "http://localhost:8080/telegraf",
   "hidden": false,
   "noCors": false,

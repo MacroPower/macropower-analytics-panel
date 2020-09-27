@@ -15,6 +15,18 @@ const dashboard = getDashboard(url);
 export const plugin = new PanelPlugin<Options>(AnalyticsPanel).setPanelOptions(
   (builder: PanelOptionsEditorBuilder<Options>) => {
     builder
+      .addSelect({
+        path: 'analyticsOptions.serverType',
+        name: 'Server type',
+        description: 'Select a server type',
+        settings: {
+          options: [
+            { value: 'telegraf', label: 'Telegraf' },
+            { value: 'custom', label: 'Custom' },
+          ],
+        },
+        defaultValue: defaults.serverType,
+      })
       .addTextInput({
         path: 'analyticsOptions.server',
         name: 'Endpoint',
@@ -44,6 +56,7 @@ export const plugin = new PanelPlugin<Options>(AnalyticsPanel).setPanelOptions(
         name: 'No CORS',
         description: 'Sets request mode to no-cors.',
         defaultValue: defaults.noCors,
+        //showIf: (config: Options) => config.analyticsOptions.serverType !== 'telegraf',
       })
       .addBooleanSwitch({
         path: 'analyticsOptions.postEnd',

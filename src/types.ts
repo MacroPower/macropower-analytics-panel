@@ -3,6 +3,7 @@ import { PanelProps } from '@grafana/data';
 export interface Props extends PanelProps<Options> {}
 
 export interface AnalyticsOptions {
+  serverType: string;
   server: string;
   key: string;
   description: string;

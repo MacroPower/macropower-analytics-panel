@@ -61,7 +61,8 @@ export class AnalyticsPanel extends PureComponent<Props> {
   };
 
   getRequestInit = (): RequestInit => {
-    const { noCors } = this.props.options.analyticsOptions;
+    const { serverType } = this.props.options.analyticsOptions;
+    const noCors = serverType === 'Telegraf' ? this.props.options.analyticsOptions.noCors : false;
 
     this.setState({ error: undefined });
 
