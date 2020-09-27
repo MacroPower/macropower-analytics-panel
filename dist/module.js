@@ -823,7 +823,10 @@ var plugin = new _grafana_data__WEBPACK_IMPORTED_MODULE_0__["PanelPlugin"](_Anal
     path: 'analyticsOptions.noCors',
     name: 'No CORS',
     description: 'Sets request mode to no-cors.',
-    defaultValue: _defaults_json__WEBPACK_IMPORTED_MODULE_3__.noCors
+    defaultValue: _defaults_json__WEBPACK_IMPORTED_MODULE_3__.noCors,
+    showIf: function showIf(config) {
+      return config.analyticsOptions.serverType !== 'telegraf';
+    }
   }).addBooleanSwitch({
     path: 'analyticsOptions.postEnd',
     name: 'Post End',

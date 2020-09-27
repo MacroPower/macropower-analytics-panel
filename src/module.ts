@@ -56,7 +56,7 @@ export const plugin = new PanelPlugin<Options>(AnalyticsPanel).setPanelOptions(
         name: 'No CORS',
         description: 'Sets request mode to no-cors.',
         defaultValue: defaults.noCors,
-        //showIf: (config: Options) => config.analyticsOptions.serverType !== 'telegraf',
+        showIf: (config: Options) => config.analyticsOptions.serverType !== 'telegraf',
       })
       .addBooleanSwitch({
         path: 'analyticsOptions.postEnd',
