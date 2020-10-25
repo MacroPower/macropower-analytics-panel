@@ -608,8 +608,10 @@ function (_super) {
     };
 
     _this.getRequestInit = function () {
-      var serverType = _this.props.options.analyticsOptions.serverType;
-      var noCors = serverType === 'Telegraf' ? _this.props.options.analyticsOptions.noCors : false;
+      var _a = _this.props.options.analyticsOptions,
+          serverType = _a.serverType,
+          postEnd = _a.postEnd;
+      var noCors = serverType === 'custom' && postEnd ? false : _this.props.options.analyticsOptions.noCors;
 
       _this.setState({
         error: undefined
@@ -825,7 +827,7 @@ var plugin = new _grafana_data__WEBPACK_IMPORTED_MODULE_0__["PanelPlugin"](_Anal
     description: 'Sets request mode to no-cors.',
     defaultValue: _defaults_json__WEBPACK_IMPORTED_MODULE_3__.noCors,
     showIf: function showIf(config) {
-      return config.analyticsOptions.serverType !== 'telegraf';
+      return config.analyticsOptions.serverType !== 'custom' || config.analyticsOptions.postEnd === false;
     }
   }).addBooleanSwitch({
     path: 'analyticsOptions.postEnd',
