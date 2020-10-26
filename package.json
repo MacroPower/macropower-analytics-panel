@@ -19,14 +19,14 @@
     "url": "https://jacobcolvin.com"
   },
   "devDependencies": {
-    "@grafana/data": "7.1.3",
-    "@grafana/runtime": "7.1.3",
-    "@grafana/toolkit": "7.1.3",
-    "@grafana/ui": "7.1.3",
+    "@grafana/data": "7.2.2",
+    "@grafana/runtime": "7.2.2",
+    "@grafana/toolkit": "7.2.2",
+    "@grafana/ui": "7.2.2",
     "@types/grafana": "git+https://git@github.com/CorpGlory/types-grafana.git"
   },
   "dependencies": {
     "@types/flat": "^5.0.1",
-    "flat": "^5.0.0"
+    "flat": "^5.0.2"
   }
 }
