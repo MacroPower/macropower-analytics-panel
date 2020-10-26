@@ -1,7 +1,10 @@
 {
   "endpoint": "http://localhost:8080/telegraf",
+  "dashboard": "$__dashboard",
   "hidden": false,
-  "noCors": false,
+  "postStart": true,
+  "postKeepAlive": false,
+  "keepAliveInterval": 600,
   "postEnd": false,
-  "flatten": true
+  "flatten": false
 }

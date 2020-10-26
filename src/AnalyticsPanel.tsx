@@ -1,129 +1,272 @@
 import React, { PureComponent } from 'react';
-import { Props } from 'types';
 import { contextSrv } from 'grafana/app/core/core';
-import { isValidUrl, getDomainName, getDate, throwOnBadResponse, getDashboard } from './utils';
-import { PLUGIN_NAME } from './constants';
-import { flatten } from 'flat';
-import { Button, JSONFormatter, ErrorWithStack } from '@grafana/ui';
-import { getTemplateSrv } from '@grafana/runtime';
+import { User } from 'grafana/app/core/services/context_srv';
+import { PanelProps, RawTimeRange } from '@grafana/data';
 import { VariableModel, VariableType } from '@grafana/data/types/templateVars';
+import { Button, JSONFormatter, ErrorWithStack } from '@grafana/ui';
+import { getTemplateSrv, config } from '@grafana/runtime';
+import { flatten } from 'flat';
+import { v4 as uuidv4 } from 'uuid';
+import { Options } from './module';
+import { PLUGIN_NAME } from './constants';
+
+interface Props extends PanelProps<Options> {}
+
+function isValidUrl(str: string) {
+  try {
+    new URL(str);
+  } catch (_) {
+    return false;
+  }
+
+  return true;
+}
+
+function getDashboardUIDFromURL(pathname: string) {
+  const path = pathname.split('/');
+  if (path && path.length > 2) {
+    return path[2];
+  }
+  return '';
+}
+
+function isNew(pathname: string) {
+  return pathname == 'dashboard/new';
+}
+
+function unixFromMs(ms: number) {
+  return Math.floor(ms / 1000);
+}
+
+function getDate() {
+  return unixFromMs(new Date().getTime());
+}
+
+function throwOnBadResponse(r: Response) {
+  const status = r.status.toString();
+  const regExp = /^(0)|(20[0-4])$/;
+
+  if (!regExp.test(status)) {
+    throw new Error(`Returned status ${status}`);
+  }
+  return r;
+}
+
+function getVariables(templateVars: VariableModel[]) {
+  const variables: Array<{
+    name: string;
+    label: string | null;
+    type: VariableType;
+    value: string | null;
+  }> = templateVars.map((v: VariableModel) => {
+    // Note: any because VariableModel does not define current
+    const untypedVariableModel: any = v;
+
+    const value: string | undefined = untypedVariableModel?.current?.value;
+
+    return {
+      name: v.name,
+      label: v.label,
+      type: v.type,
+      value: value || null,
+    };
+  });
+
+  return variables;
+}
+
+type eventType = 'start' | 'keep-alive' | 'end';
+
+type LicenseInfo = {
+  hasLicense: boolean;
+  expiry: number;
+  licenseUrl: string;
+  stateInfo: string;
+};
+
+type BuildInfo = {
+  version: string;
+  commit: string;
+  env: string;
+  edition: string;
+};
+
+type HostInfo = {
+  hostname: string;
+  port: string;
+  protocol: string;
+  buildInfo: BuildInfo;
+  licenseInfo: LicenseInfo;
+};
+
+type DashboardInfo = {
+  dashboardId: number;
+  dashboardUid: string;
+  dashboardName: string;
+  folderName: string;
+};
+
+type TimeRange = {
+  from: number;
+  to: number;
+  raw: RawTimeRange;
+};
+
+type Payload = {
+  uuid: string;
+  type: eventType;
+  host: HostInfo;
+  dashboard: DashboardInfo;
+  user: User;
+  variables: VariableModel[];
+  timeRange: TimeRange;
+  timeZone: string;
+  timeOrigin: number;
+  time: number;
+};
 
 export class AnalyticsPanel extends PureComponent<Props> {
   state: {
-    update: string;
+    uuid: string;
+    interval?: NodeJS.Timeout;
     error?: Error;
   } = {
-    update: '',
+    uuid: '',
   };
 
-  body = (): any => {
-    const tr = this.props.timeRange;
-    const timeRange = { from: tr.from.unix(), to: tr.to.unix() };
+  getPayload = (uuid: string, eventType: eventType): Payload => {
+    const time = getDate();
 
-    const url = window.location.href;
-    const endpoint = getDomainName(url);
+    const dashboardOption = this.props.options.analyticsOptions.dashboard;
 
     const templateSrv = getTemplateSrv();
     const templateVars = templateSrv.getVariables();
-    const dashboard = getDashboard(url);
+    const variables = getVariables(templateVars);
+    const dashboardName = templateSrv.replace(dashboardOption);
 
-    const variables: Array<{
-      name: string;
-      label: string | null;
-      type: VariableType;
-      value: string | null;
-    }> = templateVars.map((v: VariableModel) => {
-      // Note: any because VariableModel does not define current
-      const untypedVariableModel: any = v;
+    const location = window.location;
 
-      const value: string | undefined = untypedVariableModel?.current?.value;
+    const host: HostInfo = {
+      hostname: location.hostname,
+      port: location.port,
+      protocol: location.protocol,
+      buildInfo: config.buildInfo,
+      licenseInfo: config.licenseInfo,
+    };
 
-      return {
-        name: v.name,
-        label: v.label,
-        type: v.type,
-        value: value || null,
-      };
-    });
+    const path = location.pathname;
 
-    const host = { endpoint };
+    const dashboard: DashboardInfo = {
+      dashboardName: dashboardName,
+      dashboardUid: isNew(path) ? '' : getDashboardUIDFromURL(path),
+      dashboardId: 0, // TODO: Set dashboardId
+      folderName: '', // TODO: Set folderName
+    };
 
-    const environment = { host, timeRange, dashboard };
-    const options = this.props.options.analyticsOptions;
-    const context = contextSrv.user;
+    const tr = this.props.timeRange;
+    const timeRange: TimeRange = {
+      from: tr.from.unix(),
+      to: tr.to.unix(),
+      raw: tr.raw,
+    };
 
-    const time = getDate();
-
-    if (options.flatten) {
-      return flatten({ options, environment, context, time });
-    }
-    return { options, environment, context, variables, time };
-  };
-
-  getRequestInit = (): RequestInit => {
-    const { noCors } = this.props.options.analyticsOptions;
-
-    this.setState({ error: undefined });
+    const timeOrigin = unixFromMs(window.performance.timeOrigin);
 
     return {
-      method: 'POST',
-      mode: noCors ? 'no-cors' : 'cors',
-      body: JSON.stringify(this.body()),
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      uuid: uuid,
+      type: eventType,
+      host: host,
+      dashboard: dashboard,
+      user: contextSrv.user,
+      variables: variables,
+      timeRange: timeRange,
+      timeZone: this.props.timeZone,
+      timeOrigin: timeOrigin,
+      time: time,
     };
   };
 
-  sendInitPayload = () => {
-    const { server, postEnd } = this.props.options.analyticsOptions;
-
-    if (isValidUrl(server)) {
-      const req = fetch(server, this.getRequestInit());
-
-      if (postEnd) {
-        req
-          .then(r => throwOnBadResponse(r))
-          .then(r => r.json())
-          .then(r => this.setState({ update: r.location }))
-          .catch((e: Error) => {
-            this.setState({ error: e });
-          });
-      } else {
-        req
-          .then(r => throwOnBadResponse(r))
-          .catch((e: Error) => {
-            this.setState({ error: e });
-          });
-      }
-    } else {
-      const error = new Error(`"${server}" is not a valid URL`);
-      this.setState({ error });
+  getPayloadOrFlatPayload = (uuid: string, eventType: eventType): Payload | any => {
+    const payload = this.getPayload(uuid, eventType);
+    if (this.props.options.analyticsOptions.flatten) {
+      return flatten(payload);
     }
+    return payload;
   };
 
-  sendFinPayload = () => {
-    const { server, postEnd } = this.props.options.analyticsOptions;
-    const { update } = this.state;
+  sendPayload = (eventType: eventType) => {
+    this.setState({ error: undefined });
 
-    if (postEnd && update) {
-      const url = server + '/' + update;
-      fetch(url, this.getRequestInit()).then(r => throwOnBadResponse(r));
+    let uuid = '';
+    if (eventType === 'start') {
+      uuid = uuidv4();
+      this.setState({ uuid });
+    } else {
+      uuid = this.state.uuid;
+    }
+
+    const { server } = this.props.options.analyticsOptions;
+    const serverReplaced = getTemplateSrv().replace(server);
+
+    if (isNew(window.location.pathname)) {
+      const error = new Error('Dashboard is new and unsaved, and thus no ID was found.');
+      this.setState({ error });
+    } else if (!isValidUrl(serverReplaced)) {
+      const error = new Error(`"${serverReplaced}" is not a valid URL.`);
+      this.setState({ error });
+    } else {
+      fetch(serverReplaced, {
+        method: 'POST',
+        mode: 'no-cors',
+        body: JSON.stringify(this.getPayloadOrFlatPayload(uuid, eventType)),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+        .then(r => throwOnBadResponse(r))
+        .catch((e: Error) => {
+          this.setState({ error: e });
+        });
     }
   };
 
   componentDidMount() {
-    this.sendInitPayload();
+    const { postStart, postKeepAlive } = this.props.options.analyticsOptions;
+
+    if (postStart) {
+      this.sendPayload('start');
+    }
+
+    if (postKeepAlive) {
+      const intervalFrequency = this.props.options.analyticsOptions.keepAliveInterval;
+      const intervalFrequencyMs = intervalFrequency * 1000;
+      const interval = setInterval(() => {
+        if (window.document.hasFocus()) {
+          this.sendPayload('keep-alive');
+        }
+      }, intervalFrequencyMs);
+      this.setState({ interval });
+    }
   }
 
   componentWillUnmount() {
-    this.sendFinPayload();
+    const { postEnd } = this.props.options.analyticsOptions;
+
+    if (postEnd) {
+      this.sendPayload('end');
+    }
+
+    const { interval } = this.state;
+
+    if (interval !== undefined) {
+      clearInterval(interval);
+    }
   }
 
   render() {
     const { width, height } = this.props;
     const { hidden } = this.props.options.analyticsOptions;
-    const { error } = this.state;
+    const { error, uuid } = this.state;
 
     if (error && hidden) {
       throw error;
@@ -147,10 +290,10 @@ export class AnalyticsPanel extends PureComponent<Props> {
             }}
           >
             <ErrorWithStack title={`${PLUGIN_NAME} error`} error={error} errorInfo={null} />
-            <Button onClick={() => this.sendInitPayload()}>Retry</Button>
+            <Button onClick={() => this.sendPayload('start')}>Retry</Button>
           </div>
         )}
-        {!hidden && <JSONFormatter json={this.body()} />}
+        {!hidden && <JSONFormatter json={this.getPayloadOrFlatPayload(uuid, 'start')} />}
       </div>
     );
   }

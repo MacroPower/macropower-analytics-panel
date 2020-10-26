@@ -1,16 +1,21 @@
-import {
-  // FieldConfigProperty,
-  PanelPlugin,
-  PanelOptionsEditorBuilder,
-} from '@grafana/data';
+import { PanelPlugin, PanelOptionsEditorBuilder } from '@grafana/data';
 import { AnalyticsPanel } from './AnalyticsPanel';
-import { Options } from './types';
-import { getDashboard } from 'utils';
 import defaults from './defaults.json';
 
-// set dynamic defaults
-const url = window.location.href;
-const dashboard = getDashboard(url);
+interface AnalyticsOptions {
+  server: string;
+  dashboard: string;
+  hidden: boolean;
+  postStart: boolean;
+  postKeepAlive: boolean;
+  keepAliveInterval: number;
+  postEnd: boolean;
+  flatten: boolean;
+}
+
+export interface Options {
+  analyticsOptions: AnalyticsOptions;
+}
 
 export const plugin = new PanelPlugin<Options>(AnalyticsPanel).setPanelOptions(
   (builder: PanelOptionsEditorBuilder<Options>) => {
@@ -19,19 +24,13 @@ export const plugin = new PanelPlugin<Options>(AnalyticsPanel).setPanelOptions(
         path: 'analyticsOptions.server',
         name: 'Endpoint',
         defaultValue: defaults.endpoint,
-        description: 'Location to POST data on panel load.',
+        description: 'Location to send payload on panel load.',
       })
       .addTextInput({
-        path: 'analyticsOptions.key',
-        name: 'Dashboard ID',
-        defaultValue: dashboard.uid,
-        description: 'Unique value to identify the dashboard.',
-      })
-      .addTextInput({
-        path: 'analyticsOptions.description',
-        name: 'Dashboard Description',
-        defaultValue: dashboard.name,
-        description: 'Description of the dashboard.',
+        path: 'analyticsOptions.dashboard',
+        name: 'Dashboard',
+        defaultValue: defaults.dashboard,
+        description: 'The name of the dashboard.',
       })
       .addBooleanSwitch({
         path: 'analyticsOptions.hidden',
@@ -40,15 +39,27 @@ export const plugin = new PanelPlugin<Options>(AnalyticsPanel).setPanelOptions(
         defaultValue: defaults.hidden,
       })
       .addBooleanSwitch({
-        path: 'analyticsOptions.noCors',
-        name: 'No CORS',
-        description: 'Sets request mode to no-cors.',
-        defaultValue: defaults.noCors,
+        path: 'analyticsOptions.postStart',
+        name: 'Post Start',
+        description: 'Sends a payload with {"type": "start"} when the dashboard is loaded.',
+        defaultValue: defaults.postStart,
+      })
+      .addBooleanSwitch({
+        path: 'analyticsOptions.postKeepAlive',
+        name: 'Post Keep-alive',
+        description: 'Sends a payload with {"type": "keep-alive"} at regular intervals.',
+        defaultValue: defaults.postKeepAlive,
+      })
+      .addNumberInput({
+        path: 'analyticsOptions.keepAliveInterval',
+        name: 'Keep-alive Interval',
+        description: 'Frequency (in seconds) of keep-alive payloads.',
+        defaultValue: defaults.keepAliveInterval,
       })
       .addBooleanSwitch({
         path: 'analyticsOptions.postEnd',
         name: 'Post End',
-        description: 'Sends a second request when the panel is unloaded. Disable if you are using Telegraf.',
+        description: 'Sends a payload with {"type": "end"} when the dashboard is exited.',
         defaultValue: defaults.postEnd,
       })
       .addBooleanSwitch({
