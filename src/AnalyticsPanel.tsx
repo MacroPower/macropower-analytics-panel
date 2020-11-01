@@ -1,6 +1,4 @@
 import React, { PureComponent } from 'react';
-import { contextSrv } from 'grafana/app/core/core';
-import { User } from 'grafana/app/core/services/context_srv';
 import { PanelProps, RawTimeRange } from '@grafana/data';
 import { VariableModel, VariableType } from '@grafana/data/types/templateVars';
 import { Button, JSONFormatter, ErrorWithStack } from '@grafana/ui';
@@ -125,6 +123,25 @@ type TimeRange = {
   raw: RawTimeRange;
 };
 
+type User = {
+  isSignedIn: boolean;
+  id: number;
+  login: string;
+  email: string;
+  name: string;
+  lightTheme: boolean;
+  orgCount: number;
+  orgId: number;
+  orgName: string;
+  orgRole: string;
+  isGrafanaAdmin: boolean;
+  gravatarUrl: string;
+  timezone: string;
+  locale: string;
+  helpFlags1: number;
+  hasEditPermissionInFolders: boolean;
+};
+
 type Payload = {
   uuid: string;
   type: eventType;
@@ -190,7 +207,7 @@ export class AnalyticsPanel extends PureComponent<Props> {
       type: eventType,
       host: host,
       dashboard: dashboard,
-      user: contextSrv.user,
+      user: config.bootData.user,
       variables: variables,
       timeRange: timeRange,
       timeZone: this.props.timeZone,
