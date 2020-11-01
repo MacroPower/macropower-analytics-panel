@@ -24,18 +24,21 @@ export const plugin = new PanelPlugin<Options>(AnalyticsPanel).setPanelOptions(
         path: 'analyticsOptions.server',
         name: 'Endpoint',
         defaultValue: defaults.endpoint,
-        description: 'Location to send payload on panel load.',
+        description: 'The endpoint to which to payloads will be sent.',
       })
       .addTextInput({
         path: 'analyticsOptions.dashboard',
         name: 'Dashboard',
         defaultValue: defaults.dashboard,
-        description: 'The name of the dashboard.',
+        description: `The name of the dashboard.
+                      Use "$__dashboard" to reference the name of the current dashboard.`,
       })
       .addBooleanSwitch({
         path: 'analyticsOptions.hidden',
-        name: 'Hide JSON',
-        description: 'Hides the printed JSON object on the panel.',
+        name: 'Hide Details',
+        description: `Hides the printed JSON object on the panel.
+                      Displays any errors as a default panel error, rather than the default full error with retry.
+                      Enabling this option will allow Grafana to count errors in meta-analytics.`,
         defaultValue: defaults.hidden,
       })
       .addBooleanSwitch({
