@@ -305,7 +305,8 @@ export class AnalyticsPanel extends PureComponent<Props> {
       const intervalFrequency = this.props.options.analyticsOptions.keepAliveInterval;
       const intervalFrequencyMs = intervalFrequency * 1000;
       const interval = setInterval(() => {
-        if (window.document.hasFocus()) {
+        const keepAliveAlways = this.props.options.analyticsOptions.keepAliveAlways;
+        if (keepAliveAlways || window.document.hasFocus()) {
           this.sendPayload('keep-alive');
         }
       }, intervalFrequencyMs);

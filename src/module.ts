@@ -9,6 +9,7 @@ interface AnalyticsOptions {
   postStart: boolean;
   postKeepAlive: boolean;
   keepAliveInterval: number;
+  keepAliveAlways: boolean;
   postEnd: boolean;
   flatten: boolean;
 }
@@ -48,6 +49,13 @@ export const plugin = new PanelPlugin<Options>(AnalyticsPanel).setPanelOptions(
         defaultValue: defaults.postStart,
       })
       .addBooleanSwitch({
+        path: 'analyticsOptions.postEnd',
+        name: 'Post End',
+        description: `Sends a payload with {"type": "end"} when the dashboard is exited.
+                      Note that this payload will not be sent if the browser or tab is closed.`,
+        defaultValue: defaults.postEnd,
+      })
+      .addBooleanSwitch({
         path: 'analyticsOptions.postKeepAlive',
         name: 'Post Keep-alive',
         description: 'Sends a payload with {"type": "keep-alive"} at regular intervals.',
@@ -60,15 +68,18 @@ export const plugin = new PanelPlugin<Options>(AnalyticsPanel).setPanelOptions(
         defaultValue: defaults.keepAliveInterval,
       })
       .addBooleanSwitch({
-        path: 'analyticsOptions.postEnd',
-        name: 'Post End',
-        description: 'Sends a payload with {"type": "end"} when the dashboard is exited.',
-        defaultValue: defaults.postEnd,
+        path: 'analyticsOptions.keepAliveAlways',
+        name: 'Keep-alive Always',
+        description: `Send keep-alive payloads even when the dashboard is not in focus.
+                      This will continue messages when the dashboard is not visible or when another window has focus.
+                      Leave this option disabled unless you know what you're doing.`,
+        defaultValue: defaults.keepAliveAlways,
       })
       .addBooleanSwitch({
         path: 'analyticsOptions.flatten',
         name: 'Flatten',
-        description: 'Flattens the payload JSON. Enable if you are using Telegraf.',
+        description: `Flattens the payload JSON.
+                      This may make ingestion easier if you use a simple HTTP listener like Telegraf.`,
         defaultValue: defaults.flatten,
       });
   }

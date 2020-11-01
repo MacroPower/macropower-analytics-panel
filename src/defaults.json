@@ -5,6 +5,7 @@
   "postStart": true,
   "postKeepAlive": false,
   "keepAliveInterval": 600,
+  "keepAliveAlways": false,
   "postEnd": false,
   "flatten": false
 }
