@@ -52,23 +52,36 @@ function throwOnBadResponse(r: Response) {
   return r;
 }
 
+type TemplateVariable = {
+  name: string;
+  label: string | null;
+  type: VariableType;
+  multi: boolean;
+  values: Array<string>;
+};
+
 function getVariables(templateVars: VariableModel[]) {
-  const variables: Array<{
-    name: string;
-    label: string | null;
-    type: VariableType;
-    value: string | null;
-  }> = templateVars.map((v: VariableModel) => {
+  const variables: Array<TemplateVariable> = templateVars.map((v: VariableModel) => {
     // Note: any because VariableModel does not define current
     const untypedVariableModel: any = v;
 
-    const value: string | undefined = untypedVariableModel?.current?.value;
+    let multi = false;
+    let value: Array<string> | string | null | undefined = untypedVariableModel?.current?.value;
+
+    if (typeof value === 'string' && value !== '') {
+      value = [value];
+    } else if (!Array.isArray(value)) {
+      value = [];
+    } else {
+      multi = true;
+    }
 
     return {
       name: v.name,
-      label: v.label,
+      label: v.label || '',
       type: v.type,
-      value: value || null,
+      multi: multi,
+      values: value,
     };
   });
 
@@ -118,7 +131,7 @@ type Payload = {
   host: HostInfo;
   dashboard: DashboardInfo;
   user: User;
-  variables: VariableModel[];
+  variables: TemplateVariable[];
   timeRange: TimeRange;
   timeZone: string;
   timeOrigin: number;
