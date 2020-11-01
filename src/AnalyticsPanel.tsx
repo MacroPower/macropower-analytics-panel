@@ -10,6 +10,28 @@ import { PLUGIN_NAME } from './constants';
 
 interface Props extends PanelProps<Options> {}
 
+function isNew(pathname: string) {
+  return pathname == 'dashboard/new';
+}
+
+function getUidFromPath(pathname: string) {
+  if (!isNew(pathname)) {
+    const path = pathname.split('/');
+    if (path && path.length > 2) {
+      return path[2];
+    }
+  }
+  return '';
+}
+
+function unixFromMs(ms: number) {
+  return Math.floor(ms / 1000);
+}
+
+function getTimestamp() {
+  return unixFromMs(new Date().getTime());
+}
+
 function isValidUrl(str: string) {
   try {
     new URL(str);
@@ -18,26 +40,6 @@ function isValidUrl(str: string) {
   }
 
   return true;
-}
-
-function getDashboardUIDFromURL(pathname: string) {
-  const path = pathname.split('/');
-  if (path && path.length > 2) {
-    return path[2];
-  }
-  return '';
-}
-
-function isNew(pathname: string) {
-  return pathname == 'dashboard/new';
-}
-
-function unixFromMs(ms: number) {
-  return Math.floor(ms / 1000);
-}
-
-function getDate() {
-  return unixFromMs(new Date().getTime());
 }
 
 function throwOnBadResponse(r: Response) {
@@ -76,7 +78,7 @@ function getVariables(templateVars: VariableModel[]) {
 
     return {
       name: v.name,
-      label: v.label || '',
+      label: v.label ?? '',
       type: v.type,
       multi: multi,
       values: value,
@@ -91,7 +93,6 @@ type eventType = 'start' | 'keep-alive' | 'end';
 type LicenseInfo = {
   hasLicense: boolean;
   expiry: number;
-  licenseUrl: string;
   stateInfo: string;
 };
 
@@ -111,10 +112,8 @@ type HostInfo = {
 };
 
 type DashboardInfo = {
-  dashboardId: number;
-  dashboardUid: string;
-  dashboardName: string;
-  folderName: string;
+  name: string;
+  uid: string;
 };
 
 type TimeRange = {
@@ -135,10 +134,8 @@ type User = {
   orgName: string;
   orgRole: string;
   isGrafanaAdmin: boolean;
-  gravatarUrl: string;
   timezone: string;
   locale: string;
-  helpFlags1: number;
   hasEditPermissionInFolders: boolean;
 };
 
@@ -155,6 +152,86 @@ type Payload = {
   time: number;
 };
 
+type FlatPayload = any;
+
+function getPayload(
+  uuid: string,
+  eventType: eventType,
+  dashboardInput: string,
+  timeRange: TimeRange,
+  timeZone: string
+): Payload {
+  const time = getTimestamp();
+  const templateSrv = getTemplateSrv();
+  const location = window.location;
+
+  const templateVars = templateSrv.getVariables();
+  const variables = getVariables(templateVars);
+
+  const configBuildInfo = config.buildInfo;
+  const buildInfo: BuildInfo = {
+    version: configBuildInfo.version ?? '',
+    commit: configBuildInfo.commit ?? '',
+    env: configBuildInfo.env ?? '',
+    edition: configBuildInfo.edition ?? '',
+  };
+
+  const configLicenseInfo = config.licenseInfo;
+  const licenseInfo: LicenseInfo = {
+    hasLicense: configLicenseInfo.hasLicense ?? false,
+    expiry: configLicenseInfo.expiry ?? 0,
+    stateInfo: configLicenseInfo.stateInfo ?? '',
+  };
+
+  const host: HostInfo = {
+    hostname: location.hostname,
+    port: location.port,
+    protocol: location.protocol,
+    buildInfo: buildInfo,
+    licenseInfo: licenseInfo,
+  };
+
+  const path = location.pathname;
+  const dashboardName = templateSrv.replace(dashboardInput);
+  const dashboard: DashboardInfo = {
+    name: dashboardName,
+    uid: getUidFromPath(path),
+  };
+
+  const timeOrigin = unixFromMs(window.performance.timeOrigin);
+
+  const configUser: User = config.bootData.user;
+  const user: User = {
+    isSignedIn: configUser.isSignedIn ?? false,
+    id: configUser.id ?? 0,
+    login: configUser.login ?? '',
+    email: configUser.email ?? '',
+    name: configUser.name ?? '',
+    lightTheme: configUser.lightTheme ?? false,
+    orgCount: configUser.orgCount ?? 0,
+    orgId: configUser.orgId ?? 0,
+    orgName: configUser.orgName ?? '',
+    orgRole: configUser.orgRole ?? '',
+    isGrafanaAdmin: configUser.isGrafanaAdmin ?? false,
+    timezone: configUser.timezone ?? '',
+    locale: configUser.locale ?? '',
+    hasEditPermissionInFolders: configUser.hasEditPermissionInFolders ?? false,
+  };
+
+  return {
+    uuid: uuid,
+    type: eventType,
+    host: host,
+    dashboard: dashboard,
+    user: user,
+    variables: variables,
+    timeRange: timeRange,
+    timeZone: timeZone,
+    timeOrigin: timeOrigin,
+    time: time,
+  };
+}
+
 export class AnalyticsPanel extends PureComponent<Props> {
   state: {
     uuid: string;
@@ -164,34 +241,8 @@ export class AnalyticsPanel extends PureComponent<Props> {
     uuid: '',
   };
 
-  getPayload = (uuid: string, eventType: eventType): Payload => {
-    const time = getDate();
-
-    const dashboardOption = this.props.options.analyticsOptions.dashboard;
-
-    const templateSrv = getTemplateSrv();
-    const templateVars = templateSrv.getVariables();
-    const variables = getVariables(templateVars);
-    const dashboardName = templateSrv.replace(dashboardOption);
-
-    const location = window.location;
-
-    const host: HostInfo = {
-      hostname: location.hostname,
-      port: location.port,
-      protocol: location.protocol,
-      buildInfo: config.buildInfo,
-      licenseInfo: config.licenseInfo,
-    };
-
-    const path = location.pathname;
-
-    const dashboard: DashboardInfo = {
-      dashboardName: dashboardName,
-      dashboardUid: isNew(path) ? '' : getDashboardUIDFromURL(path),
-      dashboardId: 0, // TODO: Set dashboardId
-      folderName: '', // TODO: Set folderName
-    };
+  getPayloadOrFlatPayload = (uuid: string, eventType: eventType): Payload | FlatPayload => {
+    const options = this.props.options.analyticsOptions;
 
     const tr = this.props.timeRange;
     const timeRange: TimeRange = {
@@ -200,25 +251,8 @@ export class AnalyticsPanel extends PureComponent<Props> {
       raw: tr.raw,
     };
 
-    const timeOrigin = unixFromMs(window.performance.timeOrigin);
-
-    return {
-      uuid: uuid,
-      type: eventType,
-      host: host,
-      dashboard: dashboard,
-      user: config.bootData.user,
-      variables: variables,
-      timeRange: timeRange,
-      timeZone: this.props.timeZone,
-      timeOrigin: timeOrigin,
-      time: time,
-    };
-  };
-
-  getPayloadOrFlatPayload = (uuid: string, eventType: eventType): Payload | any => {
-    const payload = this.getPayload(uuid, eventType);
-    if (this.props.options.analyticsOptions.flatten) {
+    const payload = getPayload(uuid, eventType, options.dashboard, timeRange, this.props.timeZone);
+    if (options.flatten) {
       return flatten(payload);
     }
     return payload;
