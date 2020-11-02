@@ -66,6 +66,7 @@ export const plugin = new PanelPlugin<Options>(AnalyticsPanel).setPanelOptions(
         name: 'Keep-alive Interval',
         description: 'Frequency (in seconds) of keep-alive payloads.',
         defaultValue: defaults.keepAliveInterval,
+        showIf: (config: Options) => config.analyticsOptions.postKeepAlive,
       })
       .addBooleanSwitch({
         path: 'analyticsOptions.keepAliveAlways',
@@ -74,6 +75,7 @@ export const plugin = new PanelPlugin<Options>(AnalyticsPanel).setPanelOptions(
                       This will continue messages when the dashboard is not visible or when another window has focus.
                       Leave this option disabled unless you know what you're doing.`,
         defaultValue: defaults.keepAliveAlways,
+        showIf: (config: Options) => config.analyticsOptions.postKeepAlive,
       })
       .addBooleanSwitch({
         path: 'analyticsOptions.flatten',
