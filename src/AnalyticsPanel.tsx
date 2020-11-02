@@ -138,10 +138,10 @@ export class AnalyticsPanel extends PureComponent<Props> {
 
   render() {
     const { width, height } = this.props;
-    const { hidden } = this.props.options.analyticsOptions;
+    const { showDetails } = this.props.options.analyticsOptions;
     const { error, uuid } = this.state;
 
-    if (error && hidden) {
+    if (error && !showDetails) {
       throw error;
     }
 
@@ -166,7 +166,7 @@ export class AnalyticsPanel extends PureComponent<Props> {
             <Button onClick={() => this.sendPayload('start')}>Retry</Button>
           </div>
         )}
-        {!hidden && <JSONFormatter json={this.getPayloadOrFlatPayload(uuid, 'start')} />}
+        {showDetails && <JSONFormatter json={this.getPayloadOrFlatPayload(uuid, 'start')} />}
       </div>
     );
   }

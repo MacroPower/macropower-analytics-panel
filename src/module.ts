@@ -5,7 +5,7 @@ import defaults from './defaults.json';
 interface AnalyticsOptions {
   server: string;
   dashboard: string;
-  hidden: boolean;
+  showDetails: boolean;
   postStart: boolean;
   postKeepAlive: boolean;
   keepAliveInterval: number;
@@ -35,12 +35,13 @@ export const plugin = new PanelPlugin<Options>(AnalyticsPanel).setPanelOptions(
                       Use "$__dashboard" to reference the name of the current dashboard.`,
       })
       .addBooleanSwitch({
-        path: 'analyticsOptions.hidden',
-        name: 'Hide Details',
-        description: `Hides the printed JSON object on the panel.
-                      Displays any errors as a default panel error, rather than the default full error with retry.
-                      Enabling this option will allow Grafana to count errors in meta-analytics.`,
-        defaultValue: defaults.hidden,
+        path: 'analyticsOptions.showDetails',
+        name: 'Show Details',
+        description: `Shows the printed JSON object on the panel.
+                      Displays any errors as full error with a retry button.
+                      Enabling this option will not allow Grafana to count errors in meta-analytics.
+                      Note that this option may require you to save the dashboard and reload the page to take effect.`,
+        defaultValue: defaults.showDetails,
       })
       .addBooleanSwitch({
         path: 'analyticsOptions.postStart',
