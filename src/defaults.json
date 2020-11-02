@@ -4,7 +4,7 @@
   "showDetails": true,
   "postStart": true,
   "postKeepAlive": false,
-  "keepAliveInterval": 600,
+  "keepAliveInterval": 60,
   "keepAliveAlways": false,
   "postEnd": false,
   "flatten": false
