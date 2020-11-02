@@ -15,6 +15,7 @@ export class AnalyticsPanel extends PureComponent<Props> {
   state: {
     uuid: string;
     interval?: NodeJS.Timeout;
+    intervalFrequency?: number;
     error?: Error;
   } = {
     uuid: '',
@@ -73,24 +74,52 @@ export class AnalyticsPanel extends PureComponent<Props> {
     }
   };
 
+  sendKeepAlive = () => {
+    const { keepAliveAlways } = this.props.options.analyticsOptions;
+    if (keepAliveAlways || window.document.hasFocus()) {
+      this.sendPayload('keep-alive');
+    }
+  };
+
+  setKeepAlive = () => {
+    const prevInterval = this.state.interval;
+    const { postKeepAlive, keepAliveInterval } = this.props.options.analyticsOptions;
+    const intervalFrequencyMs = keepAliveInterval * 1000;
+    const prevIntervalFrequency = this.state.intervalFrequency;
+
+    console.log(prevIntervalFrequency, keepAliveInterval);
+
+    if (!postKeepAlive && prevInterval !== undefined) {
+      // Interval should be disabled.
+      clearInterval(prevInterval);
+      this.setState({ interval: undefined, intervalFrequency: undefined });
+    } else if (postKeepAlive && prevInterval === undefined) {
+      // Interval should be created.
+      const interval = setInterval(this.sendKeepAlive, intervalFrequencyMs);
+      this.setState({ interval, intervalFrequency: keepAliveInterval });
+    } else if (prevIntervalFrequency && prevIntervalFrequency !== keepAliveInterval) {
+      // There may be an interval, but the settings have changed.
+      console.log('Edit the interval.');
+      if (prevInterval !== undefined) {
+        clearInterval(prevInterval);
+      }
+      const interval = setInterval(this.sendKeepAlive, intervalFrequencyMs);
+      this.setState({ interval, intervalFrequency: keepAliveInterval });
+    } // Else, there is an interval, and nothing has changed.
+  };
+
   componentDidMount() {
-    const { postStart, postKeepAlive } = this.props.options.analyticsOptions;
+    const { postStart } = this.props.options.analyticsOptions;
 
     if (postStart) {
       this.sendPayload('start');
     }
 
-    if (postKeepAlive) {
-      const intervalFrequency = this.props.options.analyticsOptions.keepAliveInterval;
-      const intervalFrequencyMs = intervalFrequency * 1000;
-      const interval = setInterval(() => {
-        const keepAliveAlways = this.props.options.analyticsOptions.keepAliveAlways;
-        if (keepAliveAlways || window.document.hasFocus()) {
-          this.sendPayload('keep-alive');
-        }
-      }, intervalFrequencyMs);
-      this.setState({ interval });
-    }
+    this.setKeepAlive();
+  }
+
+  componentDidUpdate() {
+    this.setKeepAlive();
   }
 
   componentWillUnmount() {
