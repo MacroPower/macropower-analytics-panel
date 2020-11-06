@@ -7,9 +7,9 @@ interface AnalyticsOptions {
   dashboard: string;
   showDetails: boolean;
   postStart: boolean;
-  postKeepAlive: boolean;
-  keepAliveInterval: number;
-  keepAliveAlways: boolean;
+  postHeartbeat: boolean;
+  heartbeatInterval: number;
+  heartbeatAlways: boolean;
   postEnd: boolean;
   flatten: boolean;
 }
@@ -57,26 +57,26 @@ export const plugin = new PanelPlugin<Options>(AnalyticsPanel).setPanelOptions(
         defaultValue: defaults.postEnd,
       })
       .addBooleanSwitch({
-        path: 'analyticsOptions.postKeepAlive',
-        name: 'Post Keep-alive',
-        description: 'Sends a payload with {"type": "keep-alive"} at regular intervals.',
-        defaultValue: defaults.postKeepAlive,
+        path: 'analyticsOptions.postHeartbeat',
+        name: 'Post Heartbeat',
+        description: 'Sends a payload with {"type": "heartbeat"} at regular intervals.',
+        defaultValue: defaults.postHeartbeat,
       })
       .addNumberInput({
-        path: 'analyticsOptions.keepAliveInterval',
-        name: 'Keep-alive Interval',
-        description: 'Frequency (in seconds) of keep-alive payloads.',
-        defaultValue: defaults.keepAliveInterval,
-        showIf: (config: Options) => config.analyticsOptions.postKeepAlive,
+        path: 'analyticsOptions.heartbeatInterval',
+        name: 'Heartbeat Interval',
+        description: 'Frequency (in seconds) of heartbeat payloads.',
+        defaultValue: defaults.heartbeatInterval,
+        showIf: (config: Options) => config.analyticsOptions.postHeartbeat,
       })
       .addBooleanSwitch({
-        path: 'analyticsOptions.keepAliveAlways',
-        name: 'Keep-alive Always',
-        description: `Send keep-alive payloads even when the dashboard is not in focus.
+        path: 'analyticsOptions.heartbeatAlways',
+        name: 'Heartbeat Always',
+        description: `Send heartbeat payloads even when the dashboard is not in focus.
                       This will continue messages when the dashboard is not visible or when another window has focus.
                       Leave this option disabled unless you know what you're doing.`,
-        defaultValue: defaults.keepAliveAlways,
-        showIf: (config: Options) => config.analyticsOptions.postKeepAlive,
+        defaultValue: defaults.heartbeatAlways,
+        showIf: (config: Options) => config.analyticsOptions.postHeartbeat,
       })
       .addBooleanSwitch({
         path: 'analyticsOptions.flatten',

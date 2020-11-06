@@ -38,7 +38,7 @@ export function getVariables(templateVars: VariableModel[]) {
   return variables;
 }
 
-export type EventType = 'start' | 'keep-alive' | 'end';
+export type EventType = 'start' | 'heartbeat' | 'end';
 
 export type LicenseInfo = {
   hasLicense: boolean;

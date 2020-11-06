@@ -74,37 +74,37 @@ export class AnalyticsPanel extends PureComponent<Props> {
     }
   };
 
-  sendKeepAlive = () => {
-    const { keepAliveAlways } = this.props.options.analyticsOptions;
-    if (keepAliveAlways || window.document.hasFocus()) {
-      this.sendPayload('keep-alive');
+  sendHeartbeat = () => {
+    const { heartbeatAlways } = this.props.options.analyticsOptions;
+    if (heartbeatAlways || window.document.hasFocus()) {
+      this.sendPayload('heartbeat');
     }
   };
 
-  setKeepAlive = () => {
+  setHeartbeat = () => {
     const prevInterval = this.state.interval;
-    const { postKeepAlive, keepAliveInterval } = this.props.options.analyticsOptions;
-    const intervalFrequencyMs = keepAliveInterval * 1000;
+    const { postHeartbeat, heartbeatInterval } = this.props.options.analyticsOptions;
+    const intervalFrequencyMs = heartbeatInterval * 1000;
     const prevIntervalFrequency = this.state.intervalFrequency;
 
-    console.log(prevIntervalFrequency, keepAliveInterval);
+    console.log(prevIntervalFrequency, heartbeatInterval);
 
-    if (!postKeepAlive && prevInterval !== undefined) {
+    if (!postHeartbeat && prevInterval !== undefined) {
       // Interval should be disabled.
       clearInterval(prevInterval);
       this.setState({ interval: undefined, intervalFrequency: undefined });
-    } else if (postKeepAlive && prevInterval === undefined) {
+    } else if (postHeartbeat && prevInterval === undefined) {
       // Interval should be created.
-      const interval = setInterval(this.sendKeepAlive, intervalFrequencyMs);
-      this.setState({ interval, intervalFrequency: keepAliveInterval });
-    } else if (prevIntervalFrequency && prevIntervalFrequency !== keepAliveInterval) {
+      const interval = setInterval(this.sendHeartbeat, intervalFrequencyMs);
+      this.setState({ interval, intervalFrequency: heartbeatInterval });
+    } else if (prevIntervalFrequency && prevIntervalFrequency !== heartbeatInterval) {
       // There may be an interval, but the settings have changed.
       console.log('Edit the interval.');
       if (prevInterval !== undefined) {
         clearInterval(prevInterval);
       }
-      const interval = setInterval(this.sendKeepAlive, intervalFrequencyMs);
-      this.setState({ interval, intervalFrequency: keepAliveInterval });
+      const interval = setInterval(this.sendHeartbeat, intervalFrequencyMs);
+      this.setState({ interval, intervalFrequency: heartbeatInterval });
     } // Else, there is an interval, and nothing has changed.
   };
 
@@ -115,11 +115,11 @@ export class AnalyticsPanel extends PureComponent<Props> {
       this.sendPayload('start');
     }
 
-    this.setKeepAlive();
+    this.setHeartbeat();
   }
 
   componentDidUpdate() {
-    this.setKeepAlive();
+    this.setHeartbeat();
   }
 
   componentWillUnmount() {

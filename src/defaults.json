@@ -3,9 +3,9 @@
   "dashboard": "$__dashboard",
   "showDetails": true,
   "postStart": true,
-  "postKeepAlive": false,
-  "keepAliveInterval": 60,
-  "keepAliveAlways": false,
+  "postHeartbeat": false,
+  "heartbeatInterval": 60,
+  "heartbeatAlways": false,
   "postEnd": false,
   "flatten": false
 }
