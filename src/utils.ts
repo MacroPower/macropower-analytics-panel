@@ -1,3 +1,25 @@
+export function isNew(pathname: string) {
+  return pathname == 'dashboard/new';
+}
+
+export function getUidFromPath(pathname: string) {
+  if (!isNew(pathname)) {
+    const path = pathname.split('/');
+    if (path && path.length > 2) {
+      return path[2];
+    }
+  }
+  return '';
+}
+
+export function unixFromMs(ms: number) {
+  return Math.floor(ms / 1000);
+}
+
+export function getTimestamp() {
+  return unixFromMs(new Date().getTime());
+}
+
 export function isValidUrl(str: string) {
   try {
     new URL(str);
@@ -6,29 +28,6 @@ export function isValidUrl(str: string) {
   }
 
   return true;
-}
-
-export function getDomainName(str: string) {
-  return str.replace(/^.+\/\//g, '').replace(/\/.+$/g, '');
-}
-
-function getDashboardName(str: string) {
-  return str.replace(/^.+\/d\/.+\//g, '').replace(/\?.+$/g, '');
-}
-
-function getDashboardUID(str: string) {
-  return str.replace(/^.+\/d\//g, '').replace(/\/.+$/g, '');
-}
-
-export function getDashboard(template: string) {
-  return {
-    name: getDashboardName(template),
-    uid: getDashboardUID(template),
-  };
-}
-
-export function getDate() {
-  return Math.floor(new Date().getTime() / 1000);
 }
 
 export function throwOnBadResponse(r: Response) {

@@ -1,7 +1,11 @@
 {
   "endpoint": "http://localhost:8080/telegraf",
-  "hidden": false,
-  "noCors": false,
+  "dashboard": "$__dashboard",
+  "showDetails": true,
+  "postStart": true,
+  "postHeartbeat": false,
+  "heartbeatInterval": 60,
+  "heartbeatAlways": false,
   "postEnd": false,
-  "flatten": true
+  "flatten": false
 }

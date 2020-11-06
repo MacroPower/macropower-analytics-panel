@@ -1,131 +1,147 @@
 import React, { PureComponent } from 'react';
-import { Props } from 'types';
-import { contextSrv } from 'grafana/app/core/core';
-import { isValidUrl, getDomainName, getDate, throwOnBadResponse, getDashboard } from './utils';
-import { PLUGIN_NAME } from './constants';
-import { flatten } from 'flat';
+import { PanelProps } from '@grafana/data';
 import { Button, JSONFormatter, ErrorWithStack } from '@grafana/ui';
 import { getTemplateSrv } from '@grafana/runtime';
-import { VariableModel, VariableType } from '@grafana/data/types/templateVars';
+import { flatten } from 'flat';
+import { v4 as uuidv4 } from 'uuid';
+import { Options } from './module';
+import { PLUGIN_NAME } from './constants';
+import { Payload, FlatPayload, getPayload, TimeRange, EventType } from 'payload';
+import { isNew, isValidUrl, throwOnBadResponse } from 'utils';
+
+interface Props extends PanelProps<Options> {}
 
 export class AnalyticsPanel extends PureComponent<Props> {
   state: {
-    update: string;
+    uuid: string;
+    interval?: NodeJS.Timeout;
+    intervalFrequency?: number;
     error?: Error;
   } = {
-    update: '',
+    uuid: '',
   };
 
-  body = (): any => {
-    const tr = this.props.timeRange;
-    const timeRange = { from: tr.from.unix(), to: tr.to.unix() };
-
-    const url = window.location.href;
-    const endpoint = getDomainName(url);
-
-    const templateSrv = getTemplateSrv();
-    const templateVars = templateSrv.getVariables();
-    const dashboard = getDashboard(url);
-
-    const variables: Array<{
-      name: string;
-      label: string | null;
-      type: VariableType;
-      value: string | null;
-    }> = templateVars.map((v: VariableModel) => {
-      // Note: any because VariableModel does not define current
-      const untypedVariableModel: any = v;
-
-      const value: string | undefined = untypedVariableModel?.current?.value;
-
-      return {
-        name: v.name,
-        label: v.label,
-        type: v.type,
-        value: value || null,
-      };
-    });
-
-    const host = { endpoint };
-
-    const environment = { host, timeRange, dashboard };
+  getPayloadOrFlatPayload = (uuid: string, eventType: EventType): Payload | FlatPayload => {
     const options = this.props.options.analyticsOptions;
-    const context = contextSrv.user;
 
-    const time = getDate();
+    const tr = this.props.timeRange;
+    const timeRange: TimeRange = {
+      from: tr.from.unix(),
+      to: tr.to.unix(),
+      raw: tr.raw,
+    };
 
+    const payload = getPayload(uuid, eventType, options.dashboard, timeRange, this.props.timeZone);
     if (options.flatten) {
-      return flatten({ options, environment, context, time });
+      return flatten(payload);
     }
-    return { options, environment, context, variables, time };
+    return payload;
   };
 
-  getRequestInit = (): RequestInit => {
-    const { noCors } = this.props.options.analyticsOptions;
-
+  sendPayload = (eventType: EventType) => {
     this.setState({ error: undefined });
 
-    return {
-      method: 'POST',
-      mode: noCors ? 'no-cors' : 'cors',
-      body: JSON.stringify(this.body()),
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    };
-  };
-
-  sendInitPayload = () => {
-    const { server, postEnd } = this.props.options.analyticsOptions;
-
-    if (isValidUrl(server)) {
-      const req = fetch(server, this.getRequestInit());
-
-      if (postEnd) {
-        req
-          .then(r => throwOnBadResponse(r))
-          .then(r => r.json())
-          .then(r => this.setState({ update: r.location }))
-          .catch((e: Error) => {
-            this.setState({ error: e });
-          });
-      } else {
-        req
-          .then(r => throwOnBadResponse(r))
-          .catch((e: Error) => {
-            this.setState({ error: e });
-          });
-      }
+    let uuid = '';
+    if (eventType === 'start') {
+      uuid = uuidv4();
+      this.setState({ uuid });
     } else {
-      const error = new Error(`"${server}" is not a valid URL`);
+      uuid = this.state.uuid;
+    }
+
+    const { server } = this.props.options.analyticsOptions;
+    const serverReplaced = getTemplateSrv().replace(server);
+
+    if (isNew(window.location.pathname)) {
+      const error = new Error('Dashboard is new and unsaved, and thus no ID was found.');
       this.setState({ error });
+    } else if (!isValidUrl(serverReplaced)) {
+      const error = new Error(`"${serverReplaced}" is not a valid URL.`);
+      this.setState({ error });
+    } else {
+      fetch(serverReplaced, {
+        method: 'POST',
+        mode: 'no-cors',
+        body: JSON.stringify(this.getPayloadOrFlatPayload(uuid, eventType)),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+        .then(r => throwOnBadResponse(r))
+        .catch((e: Error) => {
+          this.setState({ error: e });
+        });
     }
   };
 
-  sendFinPayload = () => {
-    const { server, postEnd } = this.props.options.analyticsOptions;
-    const { update } = this.state;
-
-    if (postEnd && update) {
-      const url = server + '/' + update;
-      fetch(url, this.getRequestInit()).then(r => throwOnBadResponse(r));
+  sendHeartbeat = () => {
+    const { heartbeatAlways } = this.props.options.analyticsOptions;
+    if (heartbeatAlways || window.document.hasFocus()) {
+      this.sendPayload('heartbeat');
     }
+  };
+
+  setHeartbeat = () => {
+    const prevInterval = this.state.interval;
+    const { postHeartbeat, heartbeatInterval } = this.props.options.analyticsOptions;
+    const intervalFrequencyMs = heartbeatInterval * 1000;
+    const prevIntervalFrequency = this.state.intervalFrequency;
+
+    console.log(prevIntervalFrequency, heartbeatInterval);
+
+    if (!postHeartbeat && prevInterval !== undefined) {
+      // Interval should be disabled.
+      clearInterval(prevInterval);
+      this.setState({ interval: undefined, intervalFrequency: undefined });
+    } else if (postHeartbeat && prevInterval === undefined) {
+      // Interval should be created.
+      const interval = setInterval(this.sendHeartbeat, intervalFrequencyMs);
+      this.setState({ interval, intervalFrequency: heartbeatInterval });
+    } else if (prevIntervalFrequency && prevIntervalFrequency !== heartbeatInterval) {
+      // There may be an interval, but the settings have changed.
+      console.log('Edit the interval.');
+      if (prevInterval !== undefined) {
+        clearInterval(prevInterval);
+      }
+      const interval = setInterval(this.sendHeartbeat, intervalFrequencyMs);
+      this.setState({ interval, intervalFrequency: heartbeatInterval });
+    } // Else, there is an interval, and nothing has changed.
   };
 
   componentDidMount() {
-    this.sendInitPayload();
+    const { postStart } = this.props.options.analyticsOptions;
+
+    if (postStart) {
+      this.sendPayload('start');
+    }
+
+    this.setHeartbeat();
+  }
+
+  componentDidUpdate() {
+    this.setHeartbeat();
   }
 
   componentWillUnmount() {
-    this.sendFinPayload();
+    const { postEnd } = this.props.options.analyticsOptions;
+
+    if (postEnd) {
+      this.sendPayload('end');
+    }
+
+    const { interval } = this.state;
+
+    if (interval !== undefined) {
+      clearInterval(interval);
+    }
   }
 
   render() {
     const { width, height } = this.props;
-    const { hidden } = this.props.options.analyticsOptions;
-    const { error } = this.state;
+    const { showDetails } = this.props.options.analyticsOptions;
+    const { error, uuid } = this.state;
 
-    if (error && hidden) {
+    if (error && !showDetails) {
       throw error;
     }
 
@@ -147,10 +163,10 @@ export class AnalyticsPanel extends PureComponent<Props> {
             }}
           >
             <ErrorWithStack title={`${PLUGIN_NAME} error`} error={error} errorInfo={null} />
-            <Button onClick={() => this.sendInitPayload()}>Retry</Button>
+            <Button onClick={() => this.sendPayload('start')}>Retry</Button>
           </div>
         )}
-        {!hidden && <JSONFormatter json={this.body()} />}
+        {showDetails && <JSONFormatter json={this.getPayloadOrFlatPayload(uuid, 'start')} />}
       </div>
     );
   }
