@@ -42,11 +42,60 @@ func (h *PayloadHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 // ProcessPayload is a receiver for Payloads.
 func ProcessPayload(logger log.Logger, p Payload) {
-	_ = level.Info(logger).Log(
+	h := p.Host
+	bi := h.BuildInfo
+	li := h.LicenseInfo
+	u := p.User
+	tr := p.TimeRange
+
+	var theme string
+	if u.LightTheme {
+		theme = "light"
+	} else {
+		theme = "dark"
+	}
+
+	var role string
+	if u.IsGrafanaAdmin {
+		role = "admin"
+	} else if u.HasEditPermissionInFolders {
+		role = "editor"
+	} else {
+		role = "user"
+	}
+
+	labels := []interface{}{
 		"msg", "Received session data",
 		"uuid", p.UUID,
-		"host", p.Host.Hostname,
-	)
+		"type", p.Type,
+		"host", fmt.Sprintf("%s//%s:%s", h.Protocol, h.Hostname, h.Port),
+		"build", fmt.Sprintf("(commit=%s, edition=%s, env=%s, version=%s)", bi.Commit, bi.Edition, bi.Env, bi.Version),
+		"license", fmt.Sprintf("(state=%s, expiry=%d, license=%t)", li.StateInfo, li.Expiry, li.HasLicense),
+		"dashboard_name", p.Dashboard.Name,
+		"dashboard_uid", p.Dashboard.UID,
+		"dashboard_timezone", p.TimeZone,
+		"user_id", u.ID,
+		"user_login", u.Login,
+		"user_email", u.Email,
+		"user_name", u.Name,
+		"user_theme", theme,
+		"user_role", role,
+		"user_locale", u.Locale,
+		"user_timezone", u.Timezone,
+		"time_from", tr.From,
+		"time_to", tr.To,
+		"time_from_raw", tr.Raw.From,
+		"time_to_raw", tr.Raw.To,
+		"timeorigin", p.TimeOrigin,
+		"time", p.Time,
+	}
+
+	for _, v := range p.Variables {
+		d := fmt.Sprintf("(label=%s, type=%s, multi=%t, count=%d)", v.Label, v.Type, v.Multi, len(v.Values))
+		labels = append(labels, v.Name, d)
+	}
+
+	_ = level.Info(logger).Log(labels...)
 
 	switch p.Type {
 	case "start":
@@ -57,7 +106,7 @@ func ProcessPayload(logger log.Logger, p Payload) {
 		AddEnd(p)
 	default:
 		AddHeartbeat(p)
-		_ = level.Error(logger).Log(
+		_ = level.Warn(logger).Log(
 			"msg", "Session has invalid type, defaulted to heartbeat",
 			"uuid", p.UUID,
 			"type", p.Type,

@@ -22,8 +22,14 @@ var (
 
 func main() {
 	logger := log.NewLogfmtLogger(log.NewSyncWriter(os.Stdout))
-	level.Info(logger).Log("msg", "Starting macropower_analytics_panel server", "version", version.Info())
-	level.Info(logger).Log("msg", "Build context", "context", version.BuildContext())
+	level.Info(logger).Log(
+		"msg", "Starting server for macropower-analytics-panel",
+		"version", version.Info(),
+	)
+	level.Info(logger).Log(
+		"msg", "Build context",
+		"context", version.BuildContext(),
+	)
 
 	mux := http.NewServeMux()
 
