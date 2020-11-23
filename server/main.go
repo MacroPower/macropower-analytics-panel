@@ -27,7 +27,14 @@ func main() {
 
 	mux := http.NewServeMux()
 
-	handler := &PayloadHandler{}
+	c := make(chan Payload)
+	go func() {
+		for p := range c {
+			ProcessPayload(logger, p)
+		}
+	}()
+
+	handler := NewPayloadHandler(logger, c)
 	mux.Handle("/write", handler)
 
 	exporter := version.NewCollector("macropower_analytics_panel")

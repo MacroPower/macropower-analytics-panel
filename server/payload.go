@@ -5,19 +5,27 @@ import (
 	"fmt"
 	"net/http"
 	"sort"
-	"sync"
 	"time"
+
+	"github.com/go-kit/kit/log"
+	"github.com/go-kit/kit/log/level"
 )
 
 // PayloadHandler is the handler for incoming payloads.
 type PayloadHandler struct {
-	mu sync.Mutex
+	logger log.Logger
+	pc     chan Payload
+}
+
+// NewPayloadHandler creates a new PayloadHandler.
+func NewPayloadHandler(logger log.Logger, pc chan Payload) *PayloadHandler {
+	return &PayloadHandler{
+		logger: logger,
+		pc:     pc,
+	}
 }
 
 func (h *PayloadHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	h.mu.Lock()
-	defer h.mu.Unlock()
-
 	p := Payload{}
 
 	err := json.NewDecoder(r.Body).Decode(&p)
@@ -25,6 +33,20 @@ func (h *PayloadHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "", http.StatusBadRequest)
 		return
 	}
+
+	h.pc <- p
+
+	w.WriteHeader(http.StatusCreated)
+	fmt.Fprint(w, "")
+}
+
+// ProcessPayload is a receiver for Payloads.
+func ProcessPayload(logger log.Logger, p Payload) {
+	_ = level.Info(logger).Log(
+		"msg", "Received session data",
+		"uuid", p.UUID,
+		"host", p.Host.Hostname,
+	)
 
 	switch p.Type {
 	case "start":
@@ -34,12 +56,13 @@ func (h *PayloadHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	case "end":
 		AddEnd(p)
 	default:
-		http.Error(w, "", http.StatusNotAcceptable)
-		return
+		AddHeartbeat(p)
+		_ = level.Error(logger).Log(
+			"msg", "Session has invalid type, defaulted to heartbeat",
+			"uuid", p.UUID,
+			"type", p.Type,
+		)
 	}
-
-	w.WriteHeader(http.StatusCreated)
-	fmt.Fprint(w, "")
 }
 
 // AddStart sets the payload StartTime and adds it to the cache.
@@ -169,9 +192,9 @@ func (p Payload) GetDuration(max time.Duration) time.Duration {
 		for i, hb := range hbs[1:] {
 			durationDiff := hb.Sub(hbs[i])
 			if max == zeroDuration || durationDiff < max {
-				duration = duration + durationDiff
+				duration += durationDiff
 			} else {
-				duration = duration + max
+				duration += max
 			}
 		}
 		return duration
