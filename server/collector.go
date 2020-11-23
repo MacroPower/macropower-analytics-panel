@@ -1,7 +1,6 @@
 package main
 
 import (
-	"strconv"
 	"sync"
 	"time"
 
@@ -13,6 +12,22 @@ import (
 const (
 	namespace = "grafana"
 	subsystem = "analytics"
+)
+
+var (
+	labels = []string{
+		"grafana_host",
+		"grafana_env",
+		"dashboard_name",
+		"dashboard_uid",
+		"dashboard_timezone",
+		"user_login",
+		"user_name",
+		"user_theme",
+		"user_timezone",
+		"user_locale",
+		"user_role",
+	}
 )
 
 // Exporter is an exporter for metrics derrived from payloads in the cache.
@@ -35,48 +50,19 @@ func NewExporter(logger log.Logger) *Exporter {
 				Namespace: namespace,
 				Subsystem: subsystem,
 				Name:      "sessions_total",
-				Help:      "Was the last scrape successful.",
-			}, []string{
-				"grafana_host",
-				"grafana_env",
-				"grafana_edition",
-				"grafana_licensed",
-				"dashboard_name",
-				"dashboard_uid",
-				"user_login",
-				"user_email",
-				"user_name",
-				"light_theme",
-				"admin",
-				"editor",
-				"timezone",
-				"locale",
-				"dashboard_timezone",
-			}),
+				Help:      "Number of sessions.",
+			},
+			labels,
+		),
 		SessionDuration: prometheus.NewCounterVec(
 			prometheus.CounterOpts{
 				Namespace: namespace,
 				Subsystem: subsystem,
-				Name:      "sessions_duration",
-				Help:      "Was the last scrape successful.",
+				Name:      "sessions_duration_seconds",
+				Help:      "Duration of sessions.",
 			},
-			[]string{
-				"grafana_host",
-				"grafana_env",
-				"grafana_edition",
-				"grafana_licensed",
-				"dashboard_name",
-				"dashboard_uid",
-				"user_login",
-				"user_email",
-				"user_name",
-				"light_theme",
-				"admin",
-				"editor",
-				"timezone",
-				"locale",
-				"dashboard_timezone",
-			}),
+			labels,
+		),
 		Up: prometheus.NewGauge(prometheus.GaugeOpts{
 			Namespace: namespace,
 			Subsystem: subsystem,
@@ -122,6 +108,7 @@ func (e *Exporter) Collect(ch chan<- prometheus.Metric) {
 		level.Error(e.Logger).Log("msg", "Collection failed", "err", err)
 	}
 	e.Up.Set(up)
+	e.TotalScrapes.Inc()
 
 	e.SessionCount.Collect(ch)
 	e.SessionDuration.Collect(ch)
@@ -136,22 +123,34 @@ func (e *Exporter) scrape(ch chan<- prometheus.Metric) error {
 	for _, c := range cacheItems {
 		p := c.Object.(Payload)
 
+		var theme string
+		if p.User.LightTheme {
+			theme = "light"
+		} else {
+			theme = "dark"
+		}
+
+		var role string
+		if p.User.IsGrafanaAdmin {
+			role = "admin"
+		} else if p.User.HasEditPermissionInFolders {
+			role = "editor"
+		} else {
+			role = "user"
+		}
+
 		labels := []string{
 			p.Host.Hostname + ":" + p.Host.Port,
 			p.Host.BuildInfo.Env,
-			p.Host.BuildInfo.Edition,
-			strconv.FormatBool(p.Host.LicenseInfo.HasLicense),
 			p.Dashboard.Name,
 			p.Dashboard.UID,
+			p.TimeZone,
 			p.User.Login,
-			p.User.Email,
 			p.User.Name,
-			strconv.FormatBool(p.User.LightTheme),
-			strconv.FormatBool(p.User.IsGrafanaAdmin),
-			strconv.FormatBool(p.User.HasEditPermissionInFolders),
+			theme,
 			p.User.Timezone,
 			p.User.Locale,
-			p.TimeZone,
+			role,
 		}
 
 		sessionCount, err := e.SessionCount.GetMetricWithLabelValues(labels...)

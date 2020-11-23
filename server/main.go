@@ -37,7 +37,7 @@ func main() {
 	handler := NewPayloadHandler(logger, c)
 	mux.Handle("/write", handler)
 
-	exporter := version.NewCollector("macropower_analytics_panel")
+	exporter := version.NewCollector("grafana_analytics")
 	metricExporter := NewExporter(logger)
 	prometheus.MustRegister(exporter, metricExporter)
 	mux.Handle("/metrics", promhttp.Handler())
