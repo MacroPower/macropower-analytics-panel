@@ -42,6 +42,25 @@ func (h *PayloadHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 // ProcessPayload is a receiver for Payloads.
 func ProcessPayload(logger log.Logger, p Payload) {
+	switch p.Type {
+	case "start":
+		AddStart(p)
+	case "heartbeat":
+		AddHeartbeat(p)
+	case "end":
+		AddEnd(p)
+	default:
+		AddHeartbeat(p)
+		_ = level.Warn(logger).Log(
+			"msg", "Session has invalid type, defaulted to heartbeat",
+			"uuid", p.UUID,
+			"type", p.Type,
+		)
+	}
+}
+
+// LogPayload writes a log describing the Payload.
+func LogPayload(logger log.Logger, p Payload, logVars bool) {
 	h := p.Host
 	bi := h.BuildInfo
 	li := h.LicenseInfo
@@ -90,28 +109,14 @@ func ProcessPayload(logger log.Logger, p Payload) {
 		"time", p.Time,
 	}
 
-	for _, v := range p.Variables {
-		d := fmt.Sprintf("(label=%s, type=%s, multi=%t, count=%d)", v.Label, v.Type, v.Multi, len(v.Values))
-		labels = append(labels, v.Name, d)
+	if logVars {
+		for _, v := range p.Variables {
+			d := fmt.Sprintf("(label=%s, type=%s, multi=%t, count=%d)", v.Label, v.Type, v.Multi, len(v.Values))
+			labels = append(labels, v.Name, d)
+		}
 	}
 
 	_ = level.Info(logger).Log(labels...)
-
-	switch p.Type {
-	case "start":
-		AddStart(p)
-	case "heartbeat":
-		AddHeartbeat(p)
-	case "end":
-		AddEnd(p)
-	default:
-		AddHeartbeat(p)
-		_ = level.Warn(logger).Log(
-			"msg", "Session has invalid type, defaulted to heartbeat",
-			"uuid", p.UUID,
-			"type", p.Type,
-		)
-	}
 }
 
 // AddStart sets the payload StartTime and adds it to the cache.

@@ -14,8 +14,23 @@ const (
 	subsystem = "analytics"
 )
 
-var (
-	labels = []string{
+// Exporter is an exporter for metrics derrived from payloads in the cache.
+type Exporter struct {
+	SessionCount    *prometheus.CounterVec
+	SessionDuration *prometheus.CounterVec
+
+	mu            sync.Mutex
+	up            prometheus.Gauge
+	totalScrapes  prometheus.Counter
+	queryFailures prometheus.Counter
+
+	timeout time.Duration
+	logger  log.Logger
+}
+
+// NewExporter creates an Exporter.
+func NewExporter(logger log.Logger, timeout time.Duration) *Exporter {
+	labels := []string{
 		"grafana_host",
 		"grafana_env",
 		"dashboard_name",
@@ -28,22 +43,7 @@ var (
 		"user_locale",
 		"user_role",
 	}
-)
 
-// Exporter is an exporter for metrics derrived from payloads in the cache.
-type Exporter struct {
-	SessionCount    *prometheus.CounterVec
-	SessionDuration *prometheus.CounterVec
-
-	Mutex         sync.Mutex
-	Up            prometheus.Gauge
-	TotalScrapes  prometheus.Counter
-	QueryFailures prometheus.Counter
-	Logger        log.Logger
-}
-
-// NewExporter creates an Exporter.
-func NewExporter(logger log.Logger) *Exporter {
 	return &Exporter{
 		SessionCount: prometheus.NewCounterVec(
 			prometheus.CounterOpts{
@@ -63,39 +63,40 @@ func NewExporter(logger log.Logger) *Exporter {
 			},
 			labels,
 		),
-		Up: prometheus.NewGauge(prometheus.GaugeOpts{
+		up: prometheus.NewGauge(prometheus.GaugeOpts{
 			Namespace: namespace,
 			Subsystem: subsystem,
 			Name:      "up",
 			Help:      "Was the last scrape successful.",
 		}),
-		TotalScrapes: prometheus.NewCounter(prometheus.CounterOpts{
+		totalScrapes: prometheus.NewCounter(prometheus.CounterOpts{
 			Namespace: namespace,
 			Subsystem: subsystem,
 			Name:      "exporter_scrapes_total",
 			Help:      "Number of scrapes.",
 		}),
-		QueryFailures: prometheus.NewCounter(prometheus.CounterOpts{
+		queryFailures: prometheus.NewCounter(prometheus.CounterOpts{
 			Namespace: namespace,
 			Subsystem: subsystem,
 			Name:      "exporter_query_failures_total",
 			Help:      "Number of errors.",
 		}),
-		Logger: logger,
+		timeout: timeout,
+		logger:  logger,
 	}
 }
 
 // Describe describes all metrics with constant descriptions.
 func (e *Exporter) Describe(ch chan<- *prometheus.Desc) {
-	ch <- e.Up.Desc()
-	ch <- e.TotalScrapes.Desc()
-	ch <- e.QueryFailures.Desc()
+	ch <- e.up.Desc()
+	ch <- e.totalScrapes.Desc()
+	ch <- e.queryFailures.Desc()
 }
 
 // Collect sets and collects all metrics.
 func (e *Exporter) Collect(ch chan<- prometheus.Metric) {
-	e.Mutex.Lock() // To protect metrics from concurrent collects.
-	defer e.Mutex.Unlock()
+	e.mu.Lock() // To protect metrics from concurrent collects.
+	defer e.mu.Unlock()
 
 	e.SessionCount.Reset()
 	e.SessionDuration.Reset()
@@ -104,18 +105,18 @@ func (e *Exporter) Collect(ch chan<- prometheus.Metric) {
 	up := float64(1)
 	if err != nil {
 		up = float64(0)
-		e.QueryFailures.Inc()
-		level.Error(e.Logger).Log("msg", "Collection failed", "err", err)
+		e.queryFailures.Inc()
+		level.Error(e.logger).Log("msg", "Collection failed", "err", err)
 	}
-	e.Up.Set(up)
-	e.TotalScrapes.Inc()
+	e.up.Set(up)
+	e.totalScrapes.Inc()
 
 	e.SessionCount.Collect(ch)
 	e.SessionDuration.Collect(ch)
 
-	ch <- e.Up
-	ch <- e.TotalScrapes
-	ch <- e.QueryFailures
+	ch <- e.up
+	ch <- e.totalScrapes
+	ch <- e.queryFailures
 }
 
 func (e *Exporter) scrape(ch chan<- prometheus.Metric) error {
@@ -163,14 +164,14 @@ func (e *Exporter) scrape(ch chan<- prometheus.Metric) error {
 		endSet := !p.endTime.IsZero()
 
 		if p.startTime.IsZero() {
-			level.Error(e.Logger).Log("msg", "Start time is not set for session", "uuid", p.UUID)
+			level.Error(e.logger).Log("msg", "Start time is not set for session", "uuid", p.UUID)
 		} else if endSet || hbSet {
 			sessionDuration, err := e.SessionDuration.GetMetricWithLabelValues(labels...)
 			if err != nil {
 				return err
 			}
 
-			sessionDuration.Add(p.GetDuration(time.Duration(0)).Seconds())
+			sessionDuration.Add(p.GetDuration(e.timeout).Seconds())
 		}
 	}
 
