@@ -125,14 +125,15 @@ func (p Payload) IsTimeSet() (start bool, heartbeat bool, end bool) {
 func (p Payload) GetDuration(max time.Duration) time.Duration {
 	zeroDuration := time.Duration(0)
 
-	if p.startTime.IsZero() {
+	startSet, hbSet, endSet := p.IsTimeSet()
+	if !startSet {
 		return zeroDuration
 	}
 
-	hbs := p.heartbeatTimes
-	if len(hbs) > 0 {
+	if hbSet {
+		hbs := p.heartbeatTimes
 		hbs = append(hbs, p.startTime)
-		if !p.endTime.IsZero() {
+		if endSet {
 			hbs = append(hbs, p.endTime)
 		}
 		sort.SliceStable(hbs, func(i, j int) bool {
