@@ -11,7 +11,7 @@ import (
 	"time"
 
 	"github.com/MacroPower/macropower-analytics-panel/server/cacher"
-	server "github.com/MacroPower/macropower-analytics-panel/server/payload"
+	"github.com/MacroPower/macropower-analytics-panel/server/payload"
 	"github.com/go-kit/kit/log"
 )
 
@@ -20,8 +20,8 @@ var (
 	cache  = cacher.NewCache(10, logger)
 )
 
-func SendPayload(t *testing.T, url string, r interface{}) {
-	requestByte, _ := json.Marshal(r)
+func SendPayload(t *testing.T, url string, p payload.Payload) {
+	requestByte, _ := json.Marshal(p)
 	requestReader := bytes.NewReader(requestByte)
 
 	resp, err := http.Post(url, "application/json", requestReader)
@@ -43,30 +43,30 @@ func SendPayload(t *testing.T, url string, r interface{}) {
 }
 
 func TestHandler(t *testing.T) {
-	handler := server.NewHandler(cache, false, false, logger)
+	handler := payload.NewHandler(cache, true, true, logger)
 	testserver := httptest.NewServer(handler)
 	defer testserver.Close()
 
-	request := server.Payload{}
+	request := payload.Payload{}
 	request.Type = "start"
 	SendPayload(t, testserver.URL, request)
 	time.Sleep(100 * time.Millisecond)
 }
 
 func TestPayloadLifecycle(t *testing.T) {
-	handler := server.NewHandler(cache, false, false, logger)
+	handler := payload.NewHandler(cache, true, true, logger)
 	testserver := httptest.NewServer(handler)
 	defer testserver.Close()
 
-	var request server.Payload
+	var request payload.Payload
 
-	request = server.Payload{}
+	request = payload.Payload{}
 	request.UUID = "test"
 	request.Type = "start"
 	request.TimeOrigin = 1600000000
 	SendPayload(t, testserver.URL, request)
 
-	request = server.Payload{}
+	request = payload.Payload{}
 	request.UUID = "test"
 	request.Type = "end"
 	request.Time = 1600007200
@@ -78,7 +78,7 @@ func TestPayloadLifecycle(t *testing.T) {
 	if !exists {
 		t.Fatal("Expected cache to contain item for payload")
 	}
-	p := p1.(server.Payload)
+	p := p1.(payload.Payload)
 	actual := p.GetDuration(time.Duration(0))
 	expected := 2 * time.Hour
 	if expected != actual {
@@ -87,25 +87,25 @@ func TestPayloadLifecycle(t *testing.T) {
 }
 
 func TestPayloadHeartbeat(t *testing.T) {
-	handler := server.NewHandler(cache, false, false, logger)
+	handler := payload.NewHandler(cache, true, true, logger)
 	testserver := httptest.NewServer(handler)
 	defer testserver.Close()
 
-	var request server.Payload
+	var request payload.Payload
 
-	request = server.Payload{}
+	request = payload.Payload{}
 	request.UUID = "test"
 	request.Type = "heartbeat"
 	request.Time = 1600000001
 	SendPayload(t, testserver.URL, request)
 
-	request = server.Payload{}
+	request = payload.Payload{}
 	request.UUID = "test"
 	request.Type = "heartbeat"
 	request.Time = 1600000000
 	SendPayload(t, testserver.URL, request)
 
-	request = server.Payload{}
+	request = payload.Payload{}
 	request.UUID = "test"
 	request.Type = "heartbeat"
 	request.Time = 1600007200
@@ -117,7 +117,7 @@ func TestPayloadHeartbeat(t *testing.T) {
 	if !exists {
 		t.Fatal("Expected cache to contain item for payload")
 	}
-	p := p1.(server.Payload)
+	p := p1.(payload.Payload)
 	actual := p.GetDuration(time.Hour)
 	expected := time.Hour + time.Second
 	if expected != actual {
