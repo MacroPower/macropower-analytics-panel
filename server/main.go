@@ -5,25 +5,22 @@ import (
 	"os"
 	"time"
 
+	"github.com/MacroPower/macropower-analytics-panel/server/cacher"
+	"github.com/MacroPower/macropower-analytics-panel/server/collector"
+	"github.com/MacroPower/macropower-analytics-panel/server/payload"
 	"github.com/alecthomas/kong"
 	"github.com/go-kit/kit/log"
 	"github.com/go-kit/kit/log/level"
-	gocache "github.com/patrickmn/go-cache"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/prometheus/common/version"
 )
 
 var (
-	// Cache is an in-memory cache for payloads.
-	Cache = gocache.New(gocache.NoExpiration, gocache.NoExpiration)
-
-	// Expiration is the expiration of items in Cache.
-	Expiration = gocache.NoExpiration
-
 	cli struct {
 		HTTPAddress        string        `help:"Address to listen on for payloads and metrics." default:":8080"`
 		SessionTimeout     time.Duration `help:"The maximum duration that may be added between heartbeats. 0 = unlimited." type:"time.Duration" env:"SESSION_TIMEOUT" default:"0"`
+		MaxCacheSize       int           `help:"The maximum number of sessions to store in the cache before resetting. 0 = unlimited." default:"1000"`
 		DisableSessionLog  bool          `help:"Disables logging sessions to the console."`
 		DisableVariableLog bool          `help:"Disables logging variables to the console."`
 	}
@@ -46,23 +43,15 @@ func main() {
 		"context", version.BuildContext(),
 	)
 
+	cache := cacher.NewCacher(cli.MaxCacheSize, logger)
+
 	mux := http.NewServeMux()
 
-	c := make(chan Payload)
-	go func() {
-		for p := range c {
-			ProcessPayload(logger, p)
-			if !cli.DisableSessionLog {
-				LogPayload(logger, p, !cli.DisableVariableLog)
-			}
-		}
-	}()
-
-	handler := NewPayloadHandler(logger, c)
+	handler := payload.NewHandler(cache, !cli.DisableSessionLog, !cli.DisableVariableLog, logger)
 	mux.Handle("/write", handler)
 
 	exporter := version.NewCollector("grafana_analytics")
-	metricExporter := NewExporter(logger, cli.SessionTimeout)
+	metricExporter := collector.NewExporter(cache, cli.SessionTimeout, logger)
 	prometheus.MustRegister(exporter, metricExporter)
 	mux.Handle("/metrics", promhttp.Handler())
 

@@ -1,9 +1,11 @@
-package main
+package collector
 
 import (
 	"sync"
 	"time"
 
+	"github.com/MacroPower/macropower-analytics-panel/server/cacher"
+	"github.com/MacroPower/macropower-analytics-panel/server/payload"
 	"github.com/go-kit/kit/log"
 	"github.com/go-kit/kit/log/level"
 	"github.com/prometheus/client_golang/prometheus"
@@ -24,12 +26,13 @@ type Exporter struct {
 	totalScrapes  prometheus.Counter
 	queryFailures prometheus.Counter
 
+	cache   *cacher.Cacher
 	timeout time.Duration
 	logger  log.Logger
 }
 
 // NewExporter creates an Exporter.
-func NewExporter(logger log.Logger, timeout time.Duration) *Exporter {
+func NewExporter(cache *cacher.Cacher, timeout time.Duration, logger log.Logger) *Exporter {
 	labels := []string{
 		"grafana_host",
 		"grafana_env",
@@ -81,6 +84,7 @@ func NewExporter(logger log.Logger, timeout time.Duration) *Exporter {
 			Name:      "exporter_query_failures_total",
 			Help:      "Number of errors.",
 		}),
+		cache:   cache,
 		timeout: timeout,
 		logger:  logger,
 	}
@@ -120,9 +124,9 @@ func (e *Exporter) Collect(ch chan<- prometheus.Metric) {
 }
 
 func (e *Exporter) scrape(ch chan<- prometheus.Metric) error {
-	cacheItems := Cache.Items()
+	cacheItems := e.cache.Items()
 	for _, c := range cacheItems {
-		p := c.Object.(Payload)
+		p := c.Object.(payload.Payload)
 
 		var theme string
 		if p.User.LightTheme {
@@ -160,10 +164,8 @@ func (e *Exporter) scrape(ch chan<- prometheus.Metric) error {
 		}
 		sessionCount.Inc()
 
-		hbSet := len(p.heartbeatTimes) > 0
-		endSet := !p.endTime.IsZero()
-
-		if p.startTime.IsZero() {
+		startSet, hbSet, endSet := p.IsTimeSet()
+		if !startSet {
 			level.Error(e.logger).Log("msg", "Start time is not set for session", "uuid", p.UUID)
 		} else if endSet || hbSet {
 			sessionDuration, err := e.SessionDuration.GetMetricWithLabelValues(labels...)
