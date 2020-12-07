@@ -43,7 +43,7 @@ func main() {
 		"context", version.BuildContext(),
 	)
 
-	cache := cacher.NewCacher(cli.MaxCacheSize, logger)
+	cache := cacher.NewCache(cli.MaxCacheSize, logger)
 
 	mux := http.NewServeMux()
 

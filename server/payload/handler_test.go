@@ -17,7 +17,7 @@ import (
 
 var (
 	logger = log.NewLogfmtLogger(log.NewSyncWriter(os.Stdout))
-	cache  = cacher.NewCacher(10, logger)
+	cache  = cacher.NewCache(10, logger)
 )
 
 func SendPayload(t *testing.T, url string, r interface{}) {
