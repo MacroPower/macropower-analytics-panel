@@ -114,9 +114,9 @@ func addEnd(cache *cacher.Cacher, p Payload) {
 
 // IsTimeSet returns a bool for each time element representing the set status.
 func (p Payload) IsTimeSet() (start bool, heartbeat bool, end bool) {
-	start = p.startTime.IsZero()
+	start = !p.startTime.IsZero()
 	heartbeat = len(p.heartbeatTimes) > 0
-	end = p.endTime.IsZero()
+	end = !p.endTime.IsZero()
 
 	return start, heartbeat, end
 }
