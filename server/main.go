@@ -19,8 +19,8 @@ import (
 var (
 	cli struct {
 		HTTPAddress        string        `help:"Address to listen on for payloads and metrics." default:":8080"`
-		SessionTimeout     time.Duration `help:"The maximum duration that may be added between heartbeats. 0 = unlimited." type:"time.Duration" env:"SESSION_TIMEOUT" default:"0"`
-		MaxCacheSize       int           `help:"The maximum number of sessions to store in the cache before resetting. 0 = unlimited." default:"1000"`
+		SessionTimeout     time.Duration `help:"The maximum duration that may be added between heartbeats. 0 = unlimited." type:"time.Duration" env:"SESSION_TIMEOUT" default:"15m"`
+		MaxCacheSize       int           `help:"The maximum number of sessions to store in the cache before resetting. 0 = unlimited." default:"100000"`
 		DisableSessionLog  bool          `help:"Disables logging sessions to the console."`
 		DisableVariableLog bool          `help:"Disables logging variables to the console."`
 	}
