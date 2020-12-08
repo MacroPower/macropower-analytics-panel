@@ -1,0 +1,88 @@
+{
+  "uuid": "",
+  "type": "",
+  "host": {
+    "hostname": "localhost",
+    "port": "3000",
+    "protocol": "http:",
+    "buildInfo": {
+      "version": "7.2.2",
+      "commit": "ad9d408ac2",
+      "env": "production",
+      "edition": "Open Source"
+    },
+    "licenseInfo": {
+      "hasLicense": false,
+      "expiry": 0,
+      "stateInfo": ""
+    }
+  },
+  "dashboard": {
+    "name": "New Dashboard 1234",
+    "uid": "b_1UbypGz"
+  },
+  "user": {
+    "isSignedIn": true,
+    "id": 1,
+    "login": "admin",
+    "email": "admin@localhost",
+    "name": "admin",
+    "lightTheme": false,
+    "orgCount": 1,
+    "orgId": 1,
+    "orgName": "Main Org.",
+    "orgRole": "Admin",
+    "isGrafanaAdmin": true,
+    "timezone": "browser",
+    "locale": "en-US",
+    "hasEditPermissionInFolders": true
+  },
+  "variables": [
+    {
+      "name": "license",
+      "label": "License",
+      "type": "datasource",
+      "multi": false,
+      "values": []
+    },
+    {
+      "name": "constant",
+      "label": "Constant",
+      "type": "constant",
+      "multi": false,
+      "values": ["constantValue"]
+    },
+    {
+      "name": "textBox",
+      "label": "",
+      "type": "textbox",
+      "multi": false,
+      "values": ["textBoxDefault"]
+    },
+    {
+      "name": "customSingle",
+      "label": "",
+      "type": "custom",
+      "multi": false,
+      "values": ["value1"]
+    },
+    {
+      "name": "customMultiAll",
+      "label": "",
+      "type": "custom",
+      "multi": true,
+      "values": ["$__all"]
+    }
+  ],
+  "timeRange": {
+    "from": 1599964000,
+    "to": 1600007200,
+    "raw": {
+      "from": "now-6h",
+      "to": "now"
+    }
+  },
+  "timeZone": "utc",
+  "timeOrigin": 0,
+  "time": 0
+}

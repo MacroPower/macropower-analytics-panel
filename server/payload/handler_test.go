@@ -1,76 +1,59 @@
 package payload_test
 
 import (
-	"bytes"
-	"encoding/json"
-	"io/ioutil"
-	"net/http"
 	"net/http/httptest"
-	"os"
 	"testing"
 	"time"
 
 	"github.com/MacroPower/macropower-analytics-panel/server/cacher"
 	"github.com/MacroPower/macropower-analytics-panel/server/payload"
+	"github.com/MacroPower/macropower-analytics-panel/server/payloadtest"
 	"github.com/go-kit/kit/log"
 )
 
 var (
-	logger = log.NewLogfmtLogger(log.NewSyncWriter(os.Stdout))
-	cache  = cacher.NewCache(10, logger)
+	logBuffer = payloadtest.SafeBuffer{}
+	logger    = log.NewLogfmtLogger(log.NewSyncWriter(&logBuffer))
+	cache     = cacher.NewCache(10, logger)
 )
 
-func SendPayload(t *testing.T, url string, p payload.Payload) {
-	requestByte, _ := json.Marshal(p)
-	requestReader := bytes.NewReader(requestByte)
+func newTestServer() *httptest.Server {
+	handler := payload.NewHandler(cache, true, true, logger)
+	testserver := httptest.NewServer(handler)
 
-	resp, err := http.Post(url, "application/json", requestReader)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if resp.StatusCode != 201 {
-		t.Fatalf("Received non-201 response: %d\n", resp.StatusCode)
-	}
-
-	expected := ""
-	actual, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if expected != string(actual) {
-		t.Errorf("Expected the message '%s'\n", expected)
-	}
+	return testserver
 }
 
 func TestHandler(t *testing.T) {
-	handler := payload.NewHandler(cache, true, true, logger)
-	testserver := httptest.NewServer(handler)
+	testserver := newTestServer()
 	defer testserver.Close()
 
-	request := payload.Payload{}
+	request := payloadtest.GetPayload(t)
 	request.Type = "start"
-	SendPayload(t, testserver.URL, request)
+	payloadtest.SendPayload(t, testserver.URL, request)
 	time.Sleep(100 * time.Millisecond)
+
+	t.Log(logBuffer.String())
+	logBuffer.Reset()
 }
 
 func TestPayloadLifecycle(t *testing.T) {
-	handler := payload.NewHandler(cache, true, true, logger)
-	testserver := httptest.NewServer(handler)
+	testserver := newTestServer()
 	defer testserver.Close()
 
 	var request payload.Payload
 
-	request = payload.Payload{}
+	request = payloadtest.GetPayload(t)
 	request.UUID = "test"
 	request.Type = "start"
 	request.TimeOrigin = 1600000000
-	SendPayload(t, testserver.URL, request)
+	payloadtest.SendPayload(t, testserver.URL, request)
 
-	request = payload.Payload{}
+	request = payloadtest.GetPayload(t)
 	request.UUID = "test"
 	request.Type = "end"
 	request.Time = 1600007200
-	SendPayload(t, testserver.URL, request)
+	payloadtest.SendPayload(t, testserver.URL, request)
 
 	time.Sleep(100 * time.Millisecond)
 
@@ -84,32 +67,34 @@ func TestPayloadLifecycle(t *testing.T) {
 	if expected != actual {
 		t.Errorf("Expected the duration '%s', got '%s'\n", expected.String(), actual.String())
 	}
+
+	t.Log(logBuffer.String())
+	logBuffer.Reset()
 }
 
 func TestPayloadHeartbeat(t *testing.T) {
-	handler := payload.NewHandler(cache, true, true, logger)
-	testserver := httptest.NewServer(handler)
+	testserver := newTestServer()
 	defer testserver.Close()
 
 	var request payload.Payload
 
-	request = payload.Payload{}
+	request = payloadtest.GetPayload(t)
 	request.UUID = "test"
 	request.Type = "heartbeat"
 	request.Time = 1600000001
-	SendPayload(t, testserver.URL, request)
+	payloadtest.SendPayload(t, testserver.URL, request)
 
-	request = payload.Payload{}
+	request = payloadtest.GetPayload(t)
 	request.UUID = "test"
 	request.Type = "heartbeat"
 	request.Time = 1600000000
-	SendPayload(t, testserver.URL, request)
+	payloadtest.SendPayload(t, testserver.URL, request)
 
-	request = payload.Payload{}
+	request = payloadtest.GetPayload(t)
 	request.UUID = "test"
 	request.Type = "heartbeat"
 	request.Time = 1600007200
-	SendPayload(t, testserver.URL, request)
+	payloadtest.SendPayload(t, testserver.URL, request)
 
 	time.Sleep(100 * time.Millisecond)
 
@@ -123,4 +108,7 @@ func TestPayloadHeartbeat(t *testing.T) {
 	if expected != actual {
 		t.Errorf("Expected the duration '%s', got '%s'\n", expected.String(), actual.String())
 	}
+
+	t.Log(logBuffer.String())
+	logBuffer.Reset()
 }
