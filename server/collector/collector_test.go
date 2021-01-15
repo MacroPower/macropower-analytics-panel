@@ -21,7 +21,7 @@ var (
 	payloadURL     = "/write"
 	metricsURL     = "/metrics"
 	logger         = log.NewNopLogger()
-	cache          = cacher.NewCache(10, logger)
+	cache          = cacher.NewCache()
 	metricExporter = collector.NewExporter(cache, time.Hour, logger)
 )
 

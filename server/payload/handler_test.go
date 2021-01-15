@@ -14,7 +14,7 @@ import (
 var (
 	logBuffer = payloadtest.SafeBuffer{}
 	logger    = log.NewLogfmtLogger(log.NewSyncWriter(&logBuffer))
-	cache     = cacher.NewCache(10, logger)
+	cache     = cacher.NewCache()
 )
 
 func newTestServer() *httptest.Server {

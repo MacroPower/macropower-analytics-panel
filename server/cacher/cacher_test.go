@@ -16,7 +16,8 @@ var (
 
 func TestFlushOnMaxSizeExceeded(t *testing.T) {
 	maxSize := 10
-	cache := cacher.NewCache(maxSize, logger)
+	cache := cacher.NewCache()
+	go cacher.StartFlusher(cache, maxSize, logger)
 
 	for i := 0; i < maxSize; i++ {
 		cache.Add(fmt.Sprint(i), nil, -1)

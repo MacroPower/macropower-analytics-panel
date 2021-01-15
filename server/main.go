@@ -43,7 +43,10 @@ func main() {
 		"context", version.BuildContext(),
 	)
 
-	cache := cacher.NewCache(cli.MaxCacheSize, logger)
+	cache := cacher.NewCache()
+	if cli.MaxCacheSize != 0 {
+		go cacher.StartFlusher(cache, cli.MaxCacheSize, logger)
+	}
 
 	mux := http.NewServeMux()
 
