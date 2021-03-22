@@ -63,7 +63,14 @@ While you cannot place the panel inside a row, you can take several steps to mak
 
 If you are planning on including this panel on many or all of your dashboards, you may want to consider changing the default settings for analytics-panel. This can save you time, since you will not need to input the same endpoint and/or toggle some setting every time you add a new panel.
 
-You can edit defaults by changing the `dist/defaults.json` file. Note that changing this file will not change existing panels - defaults are _copied_ to the dashboard when the panel is added.
+You can edit defaults by doing the following:
+
+- Edit the `src/defaults.json` file.
+- Run `npm run build` to generate an updated dist.
+- Copy the updated plugin to your plugins directory.
+- Restart Grafana.
+
+Note that changing defaults will not change existing panels. Defaults are _copied_ to the dashboard when the panel is added.
 
 ## Troubleshooting
 
