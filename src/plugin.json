@@ -24,7 +24,7 @@
     "updated": "2020-08-06"
   },
   "dependencies": {
-    "grafanaVersion": "7.1.x",
+    "grafanaDependency": "7.0.0",
     "plugins": []
   }
 }
