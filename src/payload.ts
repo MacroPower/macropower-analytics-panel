@@ -93,6 +93,7 @@ export type User = {
 export type Payload = {
   uuid: string;
   type: EventType;
+  hasFocus: boolean;
   options: AnalyticsOptions;
   host: HostInfo;
   dashboard: DashboardInfo;
@@ -173,6 +174,7 @@ export function getPayload(
   return {
     uuid: uuid,
     type: EventType,
+    hasFocus: window.document.hasFocus(),
     options: options,
     host: host,
     dashboard: dashboard,
