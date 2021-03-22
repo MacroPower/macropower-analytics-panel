@@ -31,7 +31,7 @@ export class AnalyticsPanel extends PureComponent<Props> {
       raw: tr.raw,
     };
 
-    const payload = getPayload(uuid, eventType, options.dashboard, timeRange, this.props.timeZone);
+    const payload = getPayload(uuid, eventType, options, timeRange, this.props.timeZone);
     if (options.flatten) {
       return flatten(payload);
     }
