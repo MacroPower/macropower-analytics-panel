@@ -3,7 +3,7 @@
   "name": "Analytics Panel",
   "id": "macropower-analytics-panel",
   "info": {
-    "description": "Analytics Panel forwards data about your dashboard's users to an HTTP listener.",
+    "description": "It's like Google Analytics, but for Grafana dashboards!",
     "author": {
       "name": "Jacob Colvin",
       "url": "https://jacobcolvin.com"
@@ -24,7 +24,7 @@
     "updated": "2020-08-06"
   },
   "dependencies": {
-    "grafanaVersion": "7.1.x",
+    "grafanaDependency": "7.0.0",
     "plugins": []
   }
 }

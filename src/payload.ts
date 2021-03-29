@@ -1,6 +1,7 @@
 import { RawTimeRange, VariableModel, VariableType } from '@grafana/data';
 import { getTemplateSrv, config } from '@grafana/runtime';
 import { getTimestamp, getUidFromPath, unixFromMs } from 'utils';
+import { AnalyticsOptions } from './module';
 
 export type TemplateVariable = {
   name: string;
@@ -92,6 +93,8 @@ export type User = {
 export type Payload = {
   uuid: string;
   type: EventType;
+  hasFocus: boolean;
+  options: AnalyticsOptions;
   host: HostInfo;
   dashboard: DashboardInfo;
   user: User;
@@ -107,7 +110,7 @@ export type FlatPayload = any;
 export function getPayload(
   uuid: string,
   EventType: EventType,
-  dashboardInput: string,
+  options: AnalyticsOptions,
   timeRange: TimeRange,
   timeZone: string
 ): Payload {
@@ -142,7 +145,7 @@ export function getPayload(
   };
 
   const path = location.pathname;
-  const dashboardName = templateSrv.replace(dashboardInput);
+  const dashboardName = templateSrv.replace(options.dashboard);
   const dashboard: DashboardInfo = {
     name: dashboardName,
     uid: getUidFromPath(path),
@@ -171,6 +174,8 @@ export function getPayload(
   return {
     uuid: uuid,
     type: EventType,
+    hasFocus: window.document.hasFocus(),
+    options: options,
     host: host,
     dashboard: dashboard,
     user: user,

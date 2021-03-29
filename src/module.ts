@@ -2,7 +2,7 @@ import { PanelPlugin, PanelOptionsEditorBuilder } from '@grafana/data';
 import { AnalyticsPanel } from './AnalyticsPanel';
 import defaults from './defaults.json';
 
-interface AnalyticsOptions {
+export interface AnalyticsOptions {
   server: string;
   dashboard: string;
   showDetails: boolean;
