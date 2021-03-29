@@ -9,8 +9,16 @@ import (
 
 // Payload is the body expected on /write.
 type Payload struct {
-	UUID string `json:"uuid"`
-	Type string `json:"type"`
+	UUID     string `json:"uuid"`
+	Type     string `json:"type"`
+	HasFocus bool   `json:"hasFocus"`
+	Options  struct {
+		PostStart         bool `json:"postStart"`
+		PostEnd           bool `json:"postEnd"`
+		PostHeartbeat     bool `json:"postHeartbeat"`
+		HeartbeatInterval int  `json:"heartbeatInterval"`
+		HeartbeatAlways   bool `json:"heartbeatAlways"`
+	} `json:"options"`
 	Host struct {
 		Hostname  string `json:"hostname"`
 		Port      string `json:"port"`
@@ -131,6 +139,10 @@ func (p Payload) GetDuration(max time.Duration) time.Duration {
 	}
 
 	if hbSet {
+		if max == zeroDuration {
+			max = time.Duration(p.Options.HeartbeatInterval) * time.Second
+		}
+
 		hbs := p.heartbeatTimes
 		hbs = append(hbs, p.startTime)
 		if endSet {
@@ -143,7 +155,7 @@ func (p Payload) GetDuration(max time.Duration) time.Duration {
 		duration := zeroDuration
 		for i, hb := range hbs[1:] {
 			durationDiff := hb.Sub(hbs[i])
-			if max == zeroDuration || durationDiff < max {
+			if durationDiff < max {
 				duration += durationDiff
 			} else {
 				duration += max
@@ -152,5 +164,14 @@ func (p Payload) GetDuration(max time.Duration) time.Duration {
 		return duration
 	}
 
-	return p.endTime.Sub(p.startTime)
+	if !endSet {
+		return zeroDuration
+	}
+
+	totalTime := p.endTime.Sub(p.startTime)
+	if max == zeroDuration || totalTime < max {
+		return totalTime
+	}
+
+	return max
 }

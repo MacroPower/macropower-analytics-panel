@@ -77,23 +77,27 @@ func TestPayloadHeartbeat(t *testing.T) {
 	defer testserver.Close()
 
 	var request payload.Payload
+	heartbeatInterval := 3600
 
 	request = payloadtest.GetPayload(t)
 	request.UUID = "test"
 	request.Type = "heartbeat"
 	request.Time = 1600000001
+	request.Options.HeartbeatInterval = heartbeatInterval
 	payloadtest.SendPayload(t, testserver.URL, request)
 
 	request = payloadtest.GetPayload(t)
 	request.UUID = "test"
 	request.Type = "heartbeat"
 	request.Time = 1600000000
+	request.Options.HeartbeatInterval = heartbeatInterval
 	payloadtest.SendPayload(t, testserver.URL, request)
 
 	request = payloadtest.GetPayload(t)
 	request.UUID = "test"
 	request.Type = "heartbeat"
 	request.Time = 1600007200
+	request.Options.HeartbeatInterval = heartbeatInterval
 	payloadtest.SendPayload(t, testserver.URL, request)
 
 	time.Sleep(100 * time.Millisecond)
@@ -103,7 +107,7 @@ func TestPayloadHeartbeat(t *testing.T) {
 		t.Fatal("Expected cache to contain item for payload")
 	}
 	p := p1.(payload.Payload)
-	actual := p.GetDuration(time.Hour)
+	actual := p.GetDuration(time.Duration(0))
 	expected := time.Hour + time.Second
 	if expected != actual {
 		t.Errorf("Expected the duration '%s', got '%s'\n", expected.String(), actual.String())

@@ -99,6 +99,7 @@ func LogPayload(p Payload, logVars bool, logger log.Logger) {
 		"msg", "Received session data",
 		"uuid", p.UUID,
 		"type", p.Type,
+		"has_focus", p.HasFocus,
 		"host", fmt.Sprintf("%s//%s:%s", h.Protocol, h.Hostname, h.Port),
 		"build", fmt.Sprintf("(commit=%s, edition=%s, env=%s, version=%s)", bi.Commit, bi.Edition, bi.Env, bi.Version),
 		"license", fmt.Sprintf("(state=%s, expiry=%d, license=%t)", li.StateInfo, li.Expiry, li.HasLicense),

@@ -1,6 +1,18 @@
 {
   "uuid": "",
   "type": "",
+  "hasFocus": true,
+  "options": {
+    "server": "http://localhost:8080/write",
+    "dashboard": "$__dashboard",
+    "showDetails": true,
+    "postStart": true,
+    "postEnd": true,
+    "postHeartbeat": true,
+    "heartbeatInterval": 60,
+    "heartbeatAlways": false,
+    "flatten": false
+  },
   "host": {
     "hostname": "localhost",
     "port": "3000",

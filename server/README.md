@@ -1,6 +1,6 @@
 # macropower-analytics-panel Server
 
-A very simple http listener for macropower-analytics-panel.
+A receiver for the macropower-analytics-panel Grafana plugin.
 
 It can be used to expose data to systems supporting the OpenMetrics standard (e.g. Prometheus, InfluxDB 2.0) and/or your logging system of choice (e.g. Loki).
 
@@ -19,14 +19,18 @@ Usage: grafana_analytics_server
 A receiver for the macropower-analytics-panel Grafana plugin.
 
 Flags:
-  -h, --help                    Show context-sensitive help.
-      --http-address=":8080"    Address to listen on for payloads and metrics.
-      --session-timeout=15m     The maximum duration that may be added between
-                                heartbeats. 0 = unlimited ($SESSION_TIMEOUT).
-      --max-cache-size=100000   The maximum number of sessions to store in the
-                                cache before resetting. 0 = unlimited.
-      --disable-session-log     Disables logging sessions to the console.
-      --disable-variable-log    Disables logging variables to the console.
+  -h, --help                     Show context-sensitive help.
+      --http-address=":8080"     Address to listen on for payloads and metrics
+                                 ($PORT).
+      --session-timeout=0        The maximum duration that may be added between
+                                 heartbeats. 0 = auto ($SESSION_TIMEOUT).
+      --max-cache-size=100000    The maximum number of sessions to store in the
+                                 cache before resetting. 0 = unlimited
+                                 ($MAX_CACHE_SIZE).
+      --disable-session-log      Disables logging sessions to the console
+                                 ($DISABLE_SESSION_LOG).
+      --disable-variable-log     Disables logging variables to the console
+                                 ($DISABLE_VARIABLE_LOG).
 ```
 
 ### Session Timeout
@@ -40,6 +44,8 @@ Session timeout is a useful feature that can prevent sessions from being represe
 -> Navigates back to the dashboard
 
 With no session timeout, this session will be represented as being 4 hours and 15 minutes long. However, if we were to set, for example, `session-timeout=1h`, this session will be represented as being 1 hour 15 minutes long, since the inferred duration where no heartbeats were sent is being capped at 1 hour.
+
+By default, this value is automatically set using the Heartbeat Interval from the payload.
 
 ### Max Cache Size
 

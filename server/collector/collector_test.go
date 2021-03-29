@@ -22,7 +22,7 @@ var (
 	metricsURL     = "/metrics"
 	logger         = log.NewNopLogger()
 	cache          = cacher.NewCache()
-	metricExporter = collector.NewExporter(cache, time.Hour, logger)
+	metricExporter = collector.NewExporter(cache, time.Duration(0), logger)
 )
 
 func init() {
