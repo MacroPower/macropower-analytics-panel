@@ -1,13 +1,12 @@
 import React, { PureComponent } from 'react';
 import { PanelProps } from '@grafana/data';
 import { Button, JSONFormatter, ErrorWithStack } from '@grafana/ui';
-import { getTemplateSrv } from '@grafana/runtime';
 import { flatten } from 'flat';
 import { v4 as uuidv4 } from 'uuid';
 import { Options } from './module';
 import { PLUGIN_NAME } from './constants';
-import { Payload, FlatPayload, getPayload, TimeRange, EventType } from 'payload';
-import { isNew, isValidUrl, throwOnBadResponse } from 'utils';
+import { Payload, FlatPayload, getPayload, TimeRange, EventType, TemplateVariable } from 'payload';
+import { getVars, isNew, isValidUrl, throwOnBadResponse } from 'utils';
 
 interface Props extends PanelProps<Options> {}
 
@@ -16,9 +15,15 @@ export class AnalyticsPanel extends PureComponent<Props> {
     uuid: string;
     interval?: NodeJS.Timeout;
     intervalFrequency?: number;
+    server: string;
+    dashboardName: string;
+    variables: TemplateVariable[];
+    location: Location;
     error?: Error;
   } = {
     uuid: '',
+    location: JSON.parse(JSON.stringify(window.location)),
+    ...getVars(this.props.options.analyticsOptions),
   };
 
   getPayloadOrFlatPayload = (uuid: string, eventType: EventType): Payload | FlatPayload => {
@@ -31,7 +36,16 @@ export class AnalyticsPanel extends PureComponent<Props> {
       raw: tr.raw,
     };
 
-    const payload = getPayload(uuid, eventType, options, timeRange, this.props.timeZone);
+    const payload = getPayload(
+      uuid,
+      eventType,
+      options,
+      timeRange,
+      this.props.timeZone,
+      this.state.dashboardName,
+      this.state.location,
+      this.state.variables
+    );
     if (options.flatten) {
       return flatten(payload);
     }
@@ -49,25 +63,25 @@ export class AnalyticsPanel extends PureComponent<Props> {
       uuid = this.state.uuid;
     }
 
-    const { server } = this.props.options.analyticsOptions;
-    const serverReplaced = getTemplateSrv().replace(server);
+    const { server, location } = this.state;
 
-    if (isNew(window.location.pathname)) {
+    if (isNew(location.pathname)) {
       const error = new Error('Dashboard is new and unsaved, and thus no ID was found.');
       this.setState({ error });
-    } else if (!isValidUrl(serverReplaced)) {
-      const error = new Error(`"${serverReplaced}" is not a valid URL.`);
+    } else if (!isValidUrl(server)) {
+      const error = new Error(`"${server}" is not a valid URL.`);
       this.setState({ error });
     } else {
-      fetch(serverReplaced, {
+      fetch(server, {
         method: 'POST',
         mode: 'no-cors',
         body: JSON.stringify(this.getPayloadOrFlatPayload(uuid, eventType)),
         headers: {
           'Content-Type': 'application/json',
         },
+        keepalive: true,
       })
-        .then(r => throwOnBadResponse(r))
+        .then((r) => throwOnBadResponse(r))
         .catch((e: Error) => {
           this.setState({ error: e });
         });
@@ -81,6 +95,18 @@ export class AnalyticsPanel extends PureComponent<Props> {
     }
   };
 
+  shouldSetVars = (server: string, dashboardName: string, variables: TemplateVariable[]) => {
+    if (
+      server !== this.state.server ||
+      dashboardName !== this.state.dashboardName ||
+      JSON.stringify(variables) !== JSON.stringify(this.state.variables)
+    ) {
+      return true;
+    }
+
+    return false;
+  };
+
   setHeartbeat = () => {
     const prevInterval = this.state.interval;
     const { postHeartbeat, heartbeatInterval } = this.props.options.analyticsOptions;
@@ -91,10 +117,12 @@ export class AnalyticsPanel extends PureComponent<Props> {
 
     if (!postHeartbeat && prevInterval !== undefined) {
       // Interval should be disabled.
+      console.log('Disable the interval.');
       clearInterval(prevInterval);
       this.setState({ interval: undefined, intervalFrequency: undefined });
     } else if (postHeartbeat && prevInterval === undefined) {
       // Interval should be created.
+      console.log('Create the interval.');
       const interval = setInterval(this.sendHeartbeat, intervalFrequencyMs);
       this.setState({ interval, intervalFrequency: heartbeatInterval });
     } else if (prevIntervalFrequency && prevIntervalFrequency !== heartbeatInterval) {
@@ -109,6 +137,7 @@ export class AnalyticsPanel extends PureComponent<Props> {
   };
 
   componentDidMount() {
+    console.log('componentDidMount');
     const { postStart } = this.props.options.analyticsOptions;
 
     if (postStart) {
@@ -119,10 +148,16 @@ export class AnalyticsPanel extends PureComponent<Props> {
   }
 
   componentDidUpdate() {
+    console.log('componentDidUpdate');
+    const vars = getVars(this.props.options.analyticsOptions);
+    if (this.shouldSetVars(vars.server, vars.dashboardName, vars.variables)) {
+      this.setState({ ...vars });
+    }
     this.setHeartbeat();
   }
 
   componentWillUnmount() {
+    console.log('componentWillUnmount');
     const { postEnd } = this.props.options.analyticsOptions;
 
     if (postEnd) {
@@ -130,7 +165,6 @@ export class AnalyticsPanel extends PureComponent<Props> {
     }
 
     const { interval } = this.state;
-
     if (interval !== undefined) {
       clearInterval(interval);
     }

@@ -1,5 +1,5 @@
-import { RawTimeRange, VariableModel, VariableType } from '@grafana/data';
-import { getTemplateSrv, config } from '@grafana/runtime';
+import { RawTimeRange, VariableType } from '@grafana/data';
+import { config } from '@grafana/runtime';
 import { getTimestamp, getUidFromPath, unixFromMs } from 'utils';
 import { AnalyticsOptions } from './module';
 
@@ -10,34 +10,6 @@ export type TemplateVariable = {
   multi: boolean;
   values: Array<string>;
 };
-
-export function getVariables(templateVars: VariableModel[]) {
-  const variables: Array<TemplateVariable> = templateVars.map((v: VariableModel) => {
-    // Note: any because VariableModel does not define current
-    const untypedVariableModel: any = v;
-
-    let multi = false;
-    let value: Array<string> | string | null | undefined = untypedVariableModel?.current?.value;
-
-    if (typeof value === 'string' && value !== '') {
-      value = [value];
-    } else if (!Array.isArray(value)) {
-      value = [];
-    } else {
-      multi = true;
-    }
-
-    return {
-      name: v.name,
-      label: v.label ?? '',
-      type: v.type,
-      multi: multi,
-      values: value,
-    };
-  });
-
-  return variables;
-}
 
 export type EventType = 'start' | 'heartbeat' | 'end';
 
@@ -112,14 +84,12 @@ export function getPayload(
   EventType: EventType,
   options: AnalyticsOptions,
   timeRange: TimeRange,
-  timeZone: string
+  timeZone: string,
+  dashboardName: string,
+  location: Location,
+  variables: TemplateVariable[]
 ): Payload {
   const time = getTimestamp();
-  const templateSrv = getTemplateSrv();
-  const location = window.location;
-
-  const templateVars = templateSrv.getVariables();
-  const variables = getVariables(templateVars);
 
   const configBuildInfo = config.buildInfo;
   const buildInfo: BuildInfo = {
@@ -145,7 +115,6 @@ export function getPayload(
   };
 
   const path = location.pathname;
-  const dashboardName = templateSrv.replace(options.dashboard);
   const dashboard: DashboardInfo = {
     name: dashboardName,
     uid: getUidFromPath(path),
