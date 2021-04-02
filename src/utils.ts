@@ -1,5 +1,12 @@
+import { VariableModel } from '@grafana/data';
+import { getTemplateSrv } from '@grafana/runtime';
+import { AnalyticsOptions } from './module';
+import { TemplateVariable } from 'payload';
+
 export function isNew(pathname: string) {
-  return pathname == 'dashboard/new';
+  const isNew = pathname === '/dashboard/new';
+  console.log(pathname + ' is new: ' + isNew);
+  return isNew;
 }
 
 export function getUidFromPath(pathname: string) {
@@ -38,4 +45,46 @@ export function throwOnBadResponse(r: Response) {
     throw new Error(`Returned status ${status}`);
   }
   return r;
+}
+
+export function getVariables(templateVars: VariableModel[]) {
+  const variables: Array<TemplateVariable> = templateVars.map((v: VariableModel) => {
+    // Note: any because VariableModel does not define current
+    const untypedVariableModel: any = v;
+
+    let multi = false;
+    let value: Array<string> | string | null | undefined = untypedVariableModel?.current?.value;
+
+    if (typeof value === 'string' && value !== '') {
+      value = [value];
+    } else if (!Array.isArray(value)) {
+      value = [];
+    } else {
+      multi = true;
+    }
+
+    return {
+      name: v.name,
+      label: v.label ?? '',
+      type: v.type,
+      multi: multi,
+      values: value,
+    };
+  });
+
+  return variables;
+}
+
+export function getVars(options: AnalyticsOptions) {
+  const templateSrv = getTemplateSrv();
+
+  const server = templateSrv.replace(options.server);
+  const dashboardName = templateSrv.replace(options.dashboard);
+  const variables = getVariables(templateSrv.getVariables());
+
+  return {
+    server,
+    dashboardName,
+    variables,
+  };
 }
