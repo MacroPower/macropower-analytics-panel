@@ -1,5 +1,5 @@
 {
-  "endpoint": "http://localhost:8080/telegraf",
+  "endpoint": "http://localhost:8080/write",
   "dashboard": "$__dashboard",
   "showDetails": true,
   "postStart": true,
