@@ -144,7 +144,8 @@ func (p Payload) GetDuration(max time.Duration) time.Duration {
 			max += max / 4
 		}
 
-		hbs := p.heartbeatTimes
+		hbs := make([]time.Time, len(p.heartbeatTimes))
+		copy(hbs, p.heartbeatTimes)
 		hbs = append(hbs, p.startTime)
 		if endSet {
 			hbs = append(hbs, p.endTime)

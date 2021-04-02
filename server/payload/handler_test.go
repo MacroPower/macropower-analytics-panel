@@ -107,6 +107,14 @@ func TestPayloadHeartbeat(t *testing.T) {
 		t.Fatal("Expected cache to contain item for payload")
 	}
 	p := p1.(payload.Payload)
+
+	// Gathering the duration should have no side effects.
+	_ = p.GetDuration(time.Duration(0))
+	_ = p.GetDuration(time.Duration(0))
+	_ = p.GetDuration(time.Hour)
+	_ = p.GetDuration(time.Duration(0))
+	time.Sleep(100 * time.Millisecond)
+
 	actual := p.GetDuration(time.Duration(0))
 	expected := time.Hour + (time.Minute * 15) + time.Second
 	if expected != actual {
