@@ -108,7 +108,7 @@ func TestPayloadHeartbeat(t *testing.T) {
 	}
 	p := p1.(payload.Payload)
 	actual := p.GetDuration(time.Duration(0))
-	expected := time.Hour + time.Second
+	expected := time.Hour + (time.Minute * 15) + time.Second
 	if expected != actual {
 		t.Errorf("Expected the duration '%s', got '%s'\n", expected.String(), actual.String())
 	}

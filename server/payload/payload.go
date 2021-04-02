@@ -141,6 +141,7 @@ func (p Payload) GetDuration(max time.Duration) time.Duration {
 	if hbSet {
 		if max == zeroDuration {
 			max = time.Duration(p.Options.HeartbeatInterval) * time.Second
+			max += max / 4
 		}
 
 		hbs := p.heartbeatTimes
