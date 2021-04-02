@@ -1,5 +1,7 @@
 export function isNew(pathname: string) {
-  return pathname == 'dashboard/new';
+  const isNew = pathname === '/dashboard/new';
+  console.log(pathname + ' is new: ' + isNew);
+  return isNew;
 }
 
 export function getUidFromPath(pathname: string) {
