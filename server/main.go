@@ -50,7 +50,7 @@ func main() {
 
 	mux := http.NewServeMux()
 
-	handler := payload.NewHandler(cache, !cli.DisableSessionLog, !cli.DisableVariableLog, logger)
+	handler := payload.NewHandler(cache, 10, !cli.DisableSessionLog, !cli.DisableVariableLog, logger)
 	mux.Handle("/write", handler)
 
 	exporter := version.NewCollector("grafana_analytics")

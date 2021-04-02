@@ -18,8 +18,8 @@ type Handler struct {
 }
 
 // NewHandler creates a new Handler.
-func NewHandler(cache *cacher.Cacher, sessionLog bool, variableLog bool, logger log.Logger) *Handler {
-	ch := make(chan Payload)
+func NewHandler(cache *cacher.Cacher, buffer int, sessionLog bool, variableLog bool, logger log.Logger) *Handler {
+	ch := make(chan Payload, buffer)
 	go startProcessor(cache, ch, sessionLog, variableLog, logger)
 
 	return &Handler{

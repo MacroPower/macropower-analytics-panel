@@ -18,7 +18,7 @@ var (
 )
 
 func newTestServer() *httptest.Server {
-	handler := payload.NewHandler(cache, true, true, logger)
+	handler := payload.NewHandler(cache, 10, true, true, logger)
 	testserver := httptest.NewServer(handler)
 
 	return testserver
