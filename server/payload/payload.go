@@ -81,7 +81,7 @@ type Payload struct {
 
 // addStart sets the payload StartTime and adds it to the cache.
 func addStart(cache *cacher.Cacher, p Payload) {
-	ts := time.Unix(int64(p.TimeOrigin), 0)
+	ts := time.Unix(int64(p.Time), 0)
 	p.startTime = ts
 	cache.Add(p.UUID, p, cacher.Expiration)
 }
