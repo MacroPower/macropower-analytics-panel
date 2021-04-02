@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strings"
 
 	"github.com/MacroPower/macropower-analytics-panel/server/cacher"
 	"github.com/go-kit/kit/log"
@@ -126,7 +127,11 @@ func LogPayload(p Payload, logVars bool, logger log.Logger) {
 
 	if logVars {
 		for _, v := range p.Variables {
-			d := fmt.Sprintf("(label=%s, type=%s, multi=%t, count=%d)", v.Label, v.Type, v.Multi, len(v.Values))
+			var variableValues []string
+			for _, value := range v.Values {
+				variableValues = append(variableValues, value.(string))
+			}
+			d := fmt.Sprintf("(label=%s, type=%s, multi=%t, count=%d, values=[%s])", v.Label, v.Type, v.Multi, len(v.Values), strings.Join(variableValues, ","))
 			labels = append(labels, v.Name, d)
 		}
 	}
