@@ -46,7 +46,7 @@ func TestPayloadLifecycle(t *testing.T) {
 	request = payloadtest.GetPayload(t)
 	request.UUID = "test"
 	request.Type = "start"
-	request.TimeOrigin = 1600000000
+	request.Time = 1600000000
 	payloadtest.SendPayload(t, testserver.URL, request)
 
 	request = payloadtest.GetPayload(t)

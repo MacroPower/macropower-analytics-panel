@@ -94,7 +94,7 @@ func TestDurationSeconds(t *testing.T) {
 	request1.Type = "start"
 	request1.Dashboard.UID = "test123"
 	request1.Time = 1600000001
-	request1.TimeOrigin = 1600000000
+	request1.Time = 1600000000
 	payloadtest.SendPayload(t, testserver.URL+payloadURL, request1)
 	time.Sleep(500 * time.Millisecond)
 
