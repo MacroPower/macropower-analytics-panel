@@ -27,6 +27,9 @@ Flags:
       --max-cache-size=100000    The maximum number of sessions to store in the
                                  cache before resetting. 0 = unlimited
                                  ($MAX_CACHE_SIZE).
+      --log-format="logfmt"      One of: [logfmt, json] ($LOG_FORMAT).
+      --log-raw                  Outputs raw payloads as they are received
+                                 ($LOG_RAW).
       --disable-session-log      Disables logging sessions to the console
                                  ($DISABLE_SESSION_LOG).
       --disable-variable-log     Disables logging variables to the console

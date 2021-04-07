@@ -18,9 +18,9 @@ type Handler struct {
 }
 
 // NewHandler creates a new Handler.
-func NewHandler(cache *cacher.Cacher, buffer int, sessionLog bool, variableLog bool, logger log.Logger) *Handler {
+func NewHandler(cache *cacher.Cacher, buffer int, sessionLog bool, variableLog bool, raw bool, logger log.Logger) *Handler {
 	ch := make(chan Payload, buffer)
-	go startProcessor(cache, ch, sessionLog, variableLog, logger)
+	go startProcessor(cache, ch, sessionLog, variableLog, raw, logger)
 
 	return &Handler{
 		logger: logger,
@@ -44,13 +44,13 @@ func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 // startProcessor starts a receiver and optional logger for the Payload channel.
-func startProcessor(cache *cacher.Cacher, c <-chan Payload, sessionLog bool, variableLog bool, logger log.Logger) {
+func startProcessor(cache *cacher.Cacher, c <-chan Payload, sessionLog bool, variableLog bool, raw bool, logger log.Logger) {
 	for p := range c {
 		if p.Dashboard.UID != "new" {
 			processPayload(cache, p, logger)
 		}
 		if sessionLog {
-			LogPayload(p, variableLog, logger)
+			LogPayload(p, variableLog, logger, raw)
 		}
 	}
 }
@@ -75,7 +75,16 @@ func processPayload(cache *cacher.Cacher, p Payload, logger log.Logger) {
 }
 
 // LogPayload writes a log describing the Payload.
-func LogPayload(p Payload, logVars bool, logger log.Logger) {
+func LogPayload(p Payload, logVars bool, logger log.Logger, raw bool) {
+	if !logVars {
+		p.Variables = p.Variables[:0]
+	}
+
+	if raw {
+		level.Info(logger).Log("msg", "Received session data", "data", p)
+		return
+	}
+
 	h := p.Host
 	bi := h.BuildInfo
 	li := h.LicenseInfo
@@ -125,15 +134,13 @@ func LogPayload(p Payload, logVars bool, logger log.Logger) {
 		"time", p.Time,
 	}
 
-	if logVars {
-		for _, v := range p.Variables {
-			var variableValues []string
-			for _, value := range v.Values {
-				variableValues = append(variableValues, value.(string))
-			}
-			d := fmt.Sprintf("(label=%s, type=%s, multi=%t, count=%d, values=[%s])", v.Label, v.Type, v.Multi, len(v.Values), strings.Join(variableValues, ","))
-			labels = append(labels, v.Name, d)
+	for _, v := range p.Variables {
+		var variableValues []string
+		for _, value := range v.Values {
+			variableValues = append(variableValues, value.(string))
 		}
+		d := fmt.Sprintf("(label=%s, type=%s, multi=%t, count=%d, values=[%s])", v.Label, v.Type, v.Multi, len(v.Values), strings.Join(variableValues, ","))
+		labels = append(labels, v.Name, d)
 	}
 
 	_ = level.Info(logger).Log(labels...)

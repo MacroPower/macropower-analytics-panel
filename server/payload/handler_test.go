@@ -13,12 +13,12 @@ import (
 
 var (
 	logBuffer = payloadtest.SafeBuffer{}
-	logger    = log.NewLogfmtLogger(log.NewSyncWriter(&logBuffer))
+	logger    = log.NewJSONLogger(log.NewSyncWriter(&logBuffer))
 	cache     = cacher.NewCache()
 )
 
 func newTestServer() *httptest.Server {
-	handler := payload.NewHandler(cache, 10, true, true, logger)
+	handler := payload.NewHandler(cache, 10, true, true, true, logger)
 	testserver := httptest.NewServer(handler)
 
 	return testserver

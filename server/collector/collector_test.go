@@ -46,7 +46,7 @@ func getMetrics(t *testing.T, url string) string {
 func newMux() *http.ServeMux {
 	mux := http.NewServeMux()
 
-	handler := payload.NewHandler(cache, 10, true, true, logger)
+	handler := payload.NewHandler(cache, 10, true, true, true, logger)
 	mux.Handle(payloadURL, handler)
 
 	mux.Handle(metricsURL, promhttp.Handler())
