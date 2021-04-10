@@ -1,6 +1,8 @@
-# macropower-analytics-panel Server
+# macropower-analytics-panel-server
 
-A receiver for the macropower-analytics-panel Grafana plugin.
+![Docker Pulls](https://img.shields.io/docker/pulls/macropower/analytics-panel-server)
+
+A receiver for the [macropower-analytics-panel Grafana plugin](https://github.com/MacroPower/macropower-analytics-panel).
 
 It can be used to expose data to systems supporting the OpenMetrics standard (e.g. Prometheus, InfluxDB 2.0) and/or your logging system of choice (e.g. Loki).
 
@@ -14,7 +16,7 @@ Logs are simply output to stdout. You can pick them up and ship them to your pre
 ## Usage
 
 ```text
-Usage: grafana_analytics_server
+Usage: macropower_analytics_panel_server
 
 A receiver for the macropower-analytics-panel Grafana plugin.
 

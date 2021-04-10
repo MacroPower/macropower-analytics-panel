@@ -31,7 +31,7 @@ var (
 func main() {
 	ctx := kong.Parse(
 		&cli,
-		kong.Name("grafana_analytics_server"),
+		kong.Name("macropower_analytics_panel_server"),
 		kong.Description("A receiver for the macropower-analytics-panel Grafana plugin."),
 	)
 
