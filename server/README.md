@@ -1,6 +1,8 @@
 # macropower-analytics-panel-server
 
-![Docker Pulls](https://img.shields.io/docker/pulls/macropower/analytics-panel-server)
+[![Docker Pulls](https://img.shields.io/docker/pulls/macropower/analytics-panel-server)](https://hub.docker.com/r/macropower/analytics-panel-server)
+[![Docker Image Size (latest by date)](https://img.shields.io/docker/image-size/macropower/analytics-panel-server?color=green)](https://hub.docker.com/r/macropower/analytics-panel-server)
+[![Go Report Card](https://goreportcard.com/badge/github.com/MacroPower/macropower-analytics-panel)](https://goreportcard.com/report/github.com/MacroPower/macropower-analytics-panel)
 
 A receiver for the [macropower-analytics-panel Grafana plugin](https://github.com/MacroPower/macropower-analytics-panel).
 
