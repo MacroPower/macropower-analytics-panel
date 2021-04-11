@@ -1,0 +1,27 @@
+# Compose for telegraf.
+
+version: '3'
+
+networks:
+  analytics-panel:
+
+services:
+  telegraf:
+    image: telegraf:latest
+    ports:
+      - '8080:8080'
+    volumes:
+      - ./telegraf.conf:/etc/telegraf/telegraf.conf
+    networks:
+      - analytics-panel
+
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - '3000:3000'
+    volumes:
+      - ../../dist:/var/lib/grafana/plugins/macropower-analytics-panel
+      - ./dashboards:/etc/dashboards
+      - ../provisioning:/etc/grafana/provisioning/dashboards
+    networks:
+      - analytics-panel

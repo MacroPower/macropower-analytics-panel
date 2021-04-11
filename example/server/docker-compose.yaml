@@ -1,0 +1,36 @@
+# Compose for the default server.
+
+version: '3'
+
+networks:
+  analytics-panel:
+
+services:
+  macropower-analytics-panel-server:
+    image: macropower/analytics-panel-server:latest
+    ports:
+      - '8080:8080'
+    networks:
+      - analytics-panel
+
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - '3000:3000'
+    volumes:
+      - ../../dist:/var/lib/grafana/plugins/macropower-analytics-panel
+      - ./dashboards:/etc/dashboards
+      - ../provisioning:/etc/grafana/provisioning/dashboards
+    networks:
+      - analytics-panel
+
+  prometheus:
+    image: prom/prometheus:v2.26.0
+    ports:
+      - 9090:9090
+    volumes:
+      - ./prometheus.yaml:/etc/prometheus/prometheus.yaml
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yaml'
+    networks:
+      - analytics-panel

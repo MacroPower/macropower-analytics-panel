@@ -1,0 +1,119 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": "-- Grafana --",
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "gnetId": null,
+  "graphTooltip": 0,
+  "iteration": 1618173564385,
+  "links": [],
+  "panels": [
+    {
+      "datasource": null,
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 31,
+        "w": 12,
+        "x": 0,
+        "y": 0
+      },
+      "id": 2,
+      "options": {
+        "analyticsOptions": {
+          "dashboard": "$__dashboard",
+          "flatten": true,
+          "heartbeatAlways": false,
+          "heartbeatInterval": 60,
+          "postEnd": false,
+          "postHeartbeat": false,
+          "postStart": true,
+          "server": "http://localhost:8080/telegraf",
+          "showDetails": true
+        }
+      },
+      "pluginVersion": "7.5.3",
+      "targets": [
+        {
+          "queryType": "randomWalk",
+          "refId": "A"
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Example",
+      "type": "macropower-analytics-panel"
+    }
+  ],
+  "schemaVersion": 27,
+  "style": "dark",
+  "tags": [],
+  "templating": {
+    "list": [
+      {
+        "allValue": null,
+        "current": {
+          "selected": true,
+          "tags": [],
+          "text": [
+            "hello",
+            "foo"
+          ],
+          "value": [
+            "world",
+            "bar"
+          ]
+        },
+        "description": "An Example Description",
+        "error": null,
+        "hide": 0,
+        "includeAll": true,
+        "label": "An Example Label",
+        "multi": true,
+        "name": "examplevar",
+        "options": [
+          {
+            "selected": false,
+            "text": "All",
+            "value": "$__all"
+          },
+          {
+            "selected": true,
+            "text": "hello",
+            "value": "world"
+          },
+          {
+            "selected": true,
+            "text": "foo",
+            "value": "bar"
+          }
+        ],
+        "query": "hello : world, foo : bar",
+        "queryValue": "",
+        "skipUrlSync": false,
+        "type": "custom"
+      }
+    ]
+  },
+  "time": {
+    "from": "now-6h",
+    "to": "now"
+  },
+  "timepicker": {},
+  "timezone": "",
+  "title": "Analytics Panel Example Dashboard",
+  "uid": "ZQZXRMXMk",
+  "version": 1
+}

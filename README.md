@@ -40,9 +40,13 @@ This plugin works by harvesting information about a user's session and the curre
 
 **To use this plugin, you must run a server to receive and store/emit data.** There are a few different options to choose from, and they may each require different panel settings. Please refer to each of the linked servers' repos for more information.
 
+This plugin's [example](https://github.com/MacroPower/macropower-analytics-panel/tree/master/example) directory has a few docker-compose files that should help you get started, however we do not have them for every server (contributions welcome).
+
 #### Default
 
 Included in this plugin's repo is a simple [Go server](https://github.com/MacroPower/macropower-analytics-panel/tree/master/server) that requires no external dependencies. It can expose OpenMetrics and/or log sessions (using logfmt or JSON) to standard out. Its metrics are intended to be used with Prometheus; however, you can also use any OpenMetrics compatible metrics system (e.g. InfluxDB, Timescale). Logs work well in a container with the [Loki docker driver](https://grafana.com/docs/loki/latest/clients/docker-driver/), but any logging system that can parse structured logs will also work just fine.
+
+Get started or test this option with `docker-compose -f example/server/docker-compose.yaml up`
 
 #### analytics-panel-listener
 
@@ -51,6 +55,8 @@ Included in this plugin's repo is a simple [Go server](https://github.com/MacroP
 #### Telegraf
 
 You can use Telegraf's `http_listener_v2` input to accept data from this plugin. An example configuration for this input can be found in the [example](https://github.com/MacroPower/macropower-analytics-panel/tree/master/example) directory. This example requires you to enable "flatten" in the plugin's settings. You can tweak this configuration to send data to any of Telegraf's many outputs.
+
+Get started or test this option with `docker-compose -f example/telegraf/docker-compose.yaml up`
 
 #### Logstash / Fluentd / etc
 
