@@ -15,6 +15,16 @@ The service implements two endpoints:
 
 Logs are simply output to stdout. You can pick them up and ship them to your preferred logging system. For instance, if you use Loki, you can simply run this service as a container and use [Loki's Docker driver](https://grafana.com/docs/loki/latest/clients/docker-driver/).
 
+## Installation
+
+Use the docker image:
+
+```shell
+docker pull macropower/analytics-panel-server:latest
+```
+
+Or download a binary from the [releases page](https://github.com/MacroPower/macropower-analytics-panel/releases).
+
 ## Usage
 
 ```text
