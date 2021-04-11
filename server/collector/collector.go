@@ -61,7 +61,7 @@ func NewExporter(cache *cacher.Cacher, timeout time.Duration, logger log.Logger)
 			prometheus.CounterOpts{
 				Namespace: namespace,
 				Subsystem: subsystem,
-				Name:      "sessions_duration_seconds",
+				Name:      "sessions_duration_seconds_total",
 				Help:      "Duration of sessions.",
 			},
 			labels,
