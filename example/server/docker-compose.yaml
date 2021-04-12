@@ -21,6 +21,7 @@ services:
       - ../../dist:/var/lib/grafana/plugins/macropower-analytics-panel
       - ./dashboards:/etc/dashboards
       - ../provisioning:/etc/grafana/provisioning/dashboards
+      - ./datasources.yaml:/etc/grafana/provisioning/datasources/datasources.yaml
     networks:
       - analytics-panel
 

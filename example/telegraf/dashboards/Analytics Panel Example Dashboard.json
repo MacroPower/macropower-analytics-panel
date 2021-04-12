@@ -67,14 +67,8 @@
         "current": {
           "selected": true,
           "tags": [],
-          "text": [
-            "hello",
-            "foo"
-          ],
-          "value": [
-            "world",
-            "bar"
-          ]
+          "text": ["hello", "foo"],
+          "value": ["world", "bar"]
         },
         "description": "An Example Description",
         "error": null,
