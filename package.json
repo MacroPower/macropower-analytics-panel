@@ -18,10 +18,10 @@
     "url": "https://jacobcolvin.com"
   },
   "devDependencies": {
-    "@grafana/data": "7.5.2",
-    "@grafana/runtime": "7.5.2",
-    "@grafana/toolkit": "7.5.2",
-    "@grafana/ui": "7.5.2"
+    "@grafana/data": "7.5.3",
+    "@grafana/runtime": "7.5.3",
+    "@grafana/toolkit": "7.5.3",
+    "@grafana/ui": "7.5.3"
   },
   "dependencies": {
     "@types/flat": "^5.0.1",
