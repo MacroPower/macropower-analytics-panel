@@ -24,14 +24,14 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 3,
+        "h": 4,
         "w": 24,
         "x": 0,
         "y": 0
       },
       "id": 7,
       "options": {
-        "content": "Note, this dashboard is not monitored by macropower-analytics-panel.\n\nTo generate some activity, head over to: [Analytics Panel Example Dashboard](/d/ZQZXRMXMk/analytics-panel-example-dashboard?orgId=1)",
+        "content": "This dashboard is not monitored by macropower-analytics-panel.\n\nTo generate some activity, head over to: [Analytics Panel Example Dashboard](/d/ZQZXRMXMk/analytics-panel-example-dashboard?orgId=1)\n\nIt may take around a minute for activity to begin to show.",
         "mode": "markdown"
       },
       "pluginVersion": "7.5.3",
@@ -43,6 +43,7 @@
       ],
       "timeFrom": null,
       "timeShift": null,
+      "title": "Notes",
       "type": "text"
     },
     {
@@ -61,10 +62,11 @@
         "h": 9,
         "w": 12,
         "x": 0,
-        "y": 3
+        "y": 4
       },
       "hiddenSeries": false,
       "id": 2,
+      "interval": "60s",
       "legend": {
         "alignAsTable": true,
         "avg": false,
@@ -80,7 +82,7 @@
       },
       "lines": false,
       "linewidth": 1,
-      "maxDataPoints": 40,
+      "maxDataPoints": null,
       "nullPointMode": "null",
       "options": {
         "alertThreshold": true
@@ -163,10 +165,11 @@
         "h": 9,
         "w": 12,
         "x": 12,
-        "y": 3
+        "y": 4
       },
       "hiddenSeries": false,
       "id": 4,
+      "interval": "60s",
       "legend": {
         "alignAsTable": true,
         "avg": false,
@@ -174,12 +177,14 @@
         "max": false,
         "min": false,
         "show": true,
+        "sort": "total",
+        "sortDesc": true,
         "total": true,
         "values": true
       },
       "lines": false,
       "linewidth": 1,
-      "maxDataPoints": 40,
+      "maxDataPoints": null,
       "nullPointMode": "null",
       "options": {
         "alertThreshold": true
@@ -260,10 +265,11 @@
         "h": 9,
         "w": 12,
         "x": 0,
-        "y": 12
+        "y": 13
       },
       "hiddenSeries": false,
       "id": 3,
+      "interval": "60s",
       "legend": {
         "alignAsTable": true,
         "avg": false,
@@ -279,7 +285,7 @@
       },
       "lines": false,
       "linewidth": 1,
-      "maxDataPoints": 40,
+      "maxDataPoints": null,
       "nullPointMode": "null",
       "options": {
         "alertThreshold": true
@@ -362,10 +368,11 @@
         "h": 9,
         "w": 12,
         "x": 12,
-        "y": 12
+        "y": 13
       },
       "hiddenSeries": false,
       "id": 5,
+      "interval": "60s",
       "legend": {
         "alignAsTable": true,
         "avg": false,
@@ -373,12 +380,14 @@
         "max": false,
         "min": false,
         "show": true,
+        "sort": "total",
+        "sortDesc": true,
         "total": true,
         "values": true
       },
       "lines": false,
       "linewidth": 1,
-      "maxDataPoints": 40,
+      "maxDataPoints": null,
       "nullPointMode": "null",
       "options": {
         "alertThreshold": true
@@ -452,12 +461,12 @@
     "list": []
   },
   "time": {
-    "from": "now-15m",
+    "from": "now-30m",
     "to": "now"
   },
   "timepicker": {},
   "timezone": "",
   "title": "Grafana Analytics",
   "uid": "IFquOMXGz",
-  "version": 1
+  "version": 2
 }

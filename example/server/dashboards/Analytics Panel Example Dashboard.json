@@ -15,7 +15,7 @@
   "editable": true,
   "gnetId": null,
   "graphTooltip": 0,
-  "iteration": 1618185876596,
+  "iteration": 1618199963325,
   "links": [],
   "panels": [
     {
@@ -26,14 +26,14 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 3,
+        "h": 5,
         "w": 24,
         "x": 0,
         "y": 0
       },
       "id": 4,
       "options": {
-        "content": "\nTo see metrics for this dashboard, visit the [Grafana Analytics](/d/IFquOMXGz/grafana-analytics?orgId=1&refresh=5s) dashboard.\n\nThis dashboard has \"Heartbeat Always\" on, which sends metrics even when you're on a different tab, minimized, etc. In production you likely want to disable that.",
+        "content": "\nTo see metrics for this dashboard, visit the [Grafana Analytics](/d/IFquOMXGz/grafana-analytics?orgId=1&refresh=5s) dashboard.\n\nThis dashboard has \"Heartbeat Always\" on, which sends metrics even when you're on a different tab, minimized, etc. In production you likely want to disable that.\n\nFor demonstration here, the plugin's payload is shown. To hide it completely, disable \"Show Details\" in the panel's settings.",
         "mode": "markdown"
       },
       "pluginVersion": "7.5.3",
@@ -45,6 +45,7 @@
       ],
       "timeFrom": null,
       "timeShift": null,
+      "title": "Notes",
       "type": "text"
     },
     {
@@ -54,10 +55,10 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 31,
-        "w": 12,
+        "h": 16,
+        "w": 24,
         "x": 0,
-        "y": 3
+        "y": 5
       },
       "id": 2,
       "options": {
@@ -82,7 +83,7 @@
       ],
       "timeFrom": null,
       "timeShift": null,
-      "title": "Example",
+      "transparent": true,
       "type": "macropower-analytics-panel"
     }
   ],
@@ -138,5 +139,5 @@
   "timezone": "",
   "title": "Analytics Panel Example Dashboard",
   "uid": "ZQZXRMXMk",
-  "version": 1
+  "version": 2
 }
