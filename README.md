@@ -91,6 +91,7 @@ You can edit defaults by doing the following:
 
 - Edit the `src/defaults.json` file.
 - Run `npm run build` to generate an updated dist.
+- Sign with a [private signature](https://grafana.com/docs/grafana/latest/developers/plugins/sign-a-plugin/#sign-a-private-plugin) (optional).
 - Copy the updated plugin to your plugins directory.
 - Restart Grafana.
 
