@@ -77,7 +77,7 @@ func TestSessionsTotal(t *testing.T) {
 		t.Errorf("Expected metrics to contain '%s', got:\n%s", expectedSessionsTotal, m)
 	}
 
-	notExpectedDurationSeconds := "grafana_analytics_sessions_duration_seconds"
+	notExpectedDurationSeconds := "grafana_analytics_sessions_duration_seconds_total"
 	if strings.Contains(m, notExpectedDurationSeconds) {
 		t.Errorf("Expected metrics to not contain '%s', got:\n%s", notExpectedDurationSeconds, m)
 	}
@@ -113,7 +113,7 @@ func TestDurationSeconds(t *testing.T) {
 		t.Errorf("Expected metrics to contain '%s', got:\n%s", expectedSessionsTotal, m)
 	}
 
-	expectedDurationSeconds := `grafana_analytics_sessions_duration_seconds{dashboard_name="New Dashboard 1234",dashboard_timezone="utc",dashboard_uid="test123",grafana_env="production",grafana_host="localhost:3000",user_locale="en-US",user_login="admin",user_name="admin",user_role="admin",user_theme="dark",user_timezone="browser"} 7200`
+	expectedDurationSeconds := `grafana_analytics_sessions_duration_seconds_total{dashboard_name="New Dashboard 1234",dashboard_timezone="utc",dashboard_uid="test123",grafana_env="production",grafana_host="localhost:3000",user_locale="en-US",user_login="admin",user_name="admin",user_role="admin",user_theme="dark",user_timezone="browser"} 7200`
 	if !strings.Contains(m, expectedDurationSeconds) {
 		t.Errorf("Expected metrics to contain '%s', got:\n%s", expectedDurationSeconds, m)
 	}
