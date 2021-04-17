@@ -23,6 +23,7 @@ var (
 		MaxCacheSize       int           `help:"The maximum number of sessions to store in the cache before resetting. 0 = unlimited." env:"MAX_CACHE_SIZE" default:"100000"`
 		LogFormat          string        `help:"One of: [logfmt, json]." env:"LOG_FORMAT" enum:"logfmt,json" default:"logfmt"`
 		LogRaw             bool          `help:"Outputs raw payloads as they are received." env:"LOG_RAW"`
+		DisableUserMetrics bool          `help:"Disables user labels in metrics." env:"DISABLE_USER_METRICS"`
 		DisableSessionLog  bool          `help:"Disables logging sessions to the console." env:"DISABLE_SESSION_LOG"`
 		DisableVariableLog bool          `help:"Disables logging variables to the console." env:"DISABLE_VARIABLE_LOG"`
 	}
@@ -68,7 +69,7 @@ func main() {
 	mux.Handle("/write", handler)
 
 	exporter := version.NewCollector("grafana_analytics")
-	metricExporter := collector.NewExporter(cache, cli.SessionTimeout, logger)
+	metricExporter := collector.NewExporter(cache, cli.SessionTimeout, !cli.DisableUserMetrics, logger)
 	prometheus.MustRegister(exporter, metricExporter)
 	mux.Handle("/metrics", promhttp.Handler())
 

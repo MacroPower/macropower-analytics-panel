@@ -44,6 +44,8 @@ Flags:
       --log-format="logfmt"      One of: [logfmt, json] ($LOG_FORMAT).
       --log-raw                  Outputs raw payloads as they are received
                                  ($LOG_RAW).
+      --disable-user-metrics     Disables user labels in metrics
+                                 ($DISABLE_USER_METRICS).
       --disable-session-log      Disables logging sessions to the console
                                  ($DISABLE_SESSION_LOG).
       --disable-variable-log     Disables logging variables to the console

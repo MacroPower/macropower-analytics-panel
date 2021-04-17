@@ -26,25 +26,28 @@ type Exporter struct {
 	totalScrapes  prometheus.Counter
 	queryFailures prometheus.Counter
 
-	cache   *cacher.Cacher
-	timeout time.Duration
-	logger  log.Logger
+	cache       *cacher.Cacher
+	timeout     time.Duration
+	userMetrics bool
+	logger      log.Logger
 }
 
 // NewExporter creates an Exporter.
-func NewExporter(cache *cacher.Cacher, timeout time.Duration, logger log.Logger) *Exporter {
+func NewExporter(cache *cacher.Cacher, timeout time.Duration, userMetrics bool, logger log.Logger) *Exporter {
 	labels := []string{
 		"grafana_host",
 		"grafana_env",
 		"dashboard_name",
 		"dashboard_uid",
 		"dashboard_timezone",
-		"user_login",
-		"user_name",
 		"user_theme",
 		"user_timezone",
 		"user_locale",
 		"user_role",
+	}
+
+	if userMetrics {
+		labels = append(labels, "user_login", "user_name")
 	}
 
 	return &Exporter{
@@ -84,9 +87,10 @@ func NewExporter(cache *cacher.Cacher, timeout time.Duration, logger log.Logger)
 			Name:      "exporter_query_failures_total",
 			Help:      "Number of errors.",
 		}),
-		cache:   cache,
-		timeout: timeout,
-		logger:  logger,
+		cache:       cache,
+		timeout:     timeout,
+		userMetrics: userMetrics,
+		logger:      logger,
 	}
 }
 
@@ -150,12 +154,14 @@ func (e *Exporter) scrape(ch chan<- prometheus.Metric) error {
 			p.Dashboard.Name,
 			p.Dashboard.UID,
 			p.TimeZone,
-			p.User.Login,
-			p.User.Name,
 			theme,
 			p.User.Timezone,
 			p.User.Locale,
 			role,
+		}
+
+		if e.userMetrics {
+			labels = append(labels, p.User.Login, p.User.Name)
 		}
 
 		sessionCount, err := e.SessionCount.GetMetricWithLabelValues(labels...)
