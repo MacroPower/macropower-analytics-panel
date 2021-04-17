@@ -35,7 +35,7 @@ A receiver for the macropower-analytics-panel Grafana plugin.
 Flags:
   -h, --help                     Show context-sensitive help.
       --http-address=":8080"     Address to listen on for payloads and metrics
-                                 ($PORT).
+                                 ($HTTP_ADDRESS).
       --session-timeout=0        The maximum duration that may be added between
                                  heartbeats. 0 = auto ($SESSION_TIMEOUT).
       --max-cache-size=100000    The maximum number of sessions to store in the

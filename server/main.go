@@ -18,7 +18,7 @@ import (
 
 var (
 	cli struct {
-		HTTPAddress        string        `help:"Address to listen on for payloads and metrics." env:"PORT" default:":8080"`
+		HTTPAddress        string        `help:"Address to listen on for payloads and metrics." env:"HTTP_ADDRESS" default:":8080"`
 		SessionTimeout     time.Duration `help:"The maximum duration that may be added between heartbeats. 0 = auto." type:"time.Duration" env:"SESSION_TIMEOUT" default:"0"`
 		MaxCacheSize       int           `help:"The maximum number of sessions to store in the cache before resetting. 0 = unlimited." env:"MAX_CACHE_SIZE" default:"100000"`
 		LogFormat          string        `help:"One of: [logfmt, json]." env:"LOG_FORMAT" enum:"logfmt,json" default:"logfmt"`
