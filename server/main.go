@@ -36,7 +36,7 @@ func main() {
 		kong.Description("A receiver for the macropower-analytics-panel Grafana plugin."),
 	)
 
-	logWriter := log.NewSyncWriter(os.Stderr)
+	logWriter := log.NewSyncWriter(os.Stdout)
 	logger := func() log.Logger {
 		if cli.LogFormat == "json" || cli.LogRaw {
 			return log.NewJSONLogger(logWriter)
