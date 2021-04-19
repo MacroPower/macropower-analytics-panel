@@ -52,6 +52,28 @@ Flags:
                                  ($DISABLE_VARIABLE_LOG).
 ```
 
+## Examples
+
+### Metrics
+
+```text
+# HELP grafana_analytics_sessions_duration_seconds_total Duration of sessions.
+# TYPE grafana_analytics_sessions_duration_seconds_total counter
+grafana_analytics_sessions_duration_seconds_total{dashboard_name="Analytics Panel Example Dashboard",dashboard_timezone="browser",dashboard_uid="ZQZXRMXMk",grafana_env="production",grafana_host="localhost:3000",user_locale="en-US",user_login="admin",user_name="admin",user_role="admin",user_theme="dark",user_timezone="browser"} 6
+# HELP grafana_analytics_sessions_total Number of sessions.
+# TYPE grafana_analytics_sessions_total counter
+grafana_analytics_sessions_total{dashboard_name="Analytics Panel Example Dashboard",dashboard_timezone="browser",dashboard_uid="ZQZXRMXMk",grafana_env="production",grafana_host="localhost:3000",user_locale="en-US",user_login="admin",user_name="admin",user_role="admin",user_theme="dark",user_timezone="browser"} 1
+```
+
+### Logs
+
+```text
+level=info msg="Received session data" uuid=e6cf6890-9469-49e6-927d-ea57c10f5a4f type=start has_focus=true host=http://localhost:3000 build="(commit=615c153b3a, edition=Open Source, env=production, version=7.5.4)" license="(state=, expiry=0, license=false)" dashboard_name="Analytics Panel Example Dashboard" dashboard_uid=ZQZXRMXMk dashboard_timezone=browser user_id=1 user_login=admin user_email=admin@localhost user_name=admin user_theme=dark user_role=admin user_locale=en-US user_timezone=browser time_from=1618782134 time_to=1618803734 time_from_raw=now-6h time_to_raw=now timeorigin=1618799093 time=1618803734 examplevar="(label=An Example Label, type=custom, multi=true, count=2, values=[world,bar])"
+level=info msg="Received session data" uuid=e6cf6890-9469-49e6-927d-ea57c10f5a4f type=end has_focus=true host=http://localhost:3000 build="(commit=615c153b3a, edition=Open Source, env=production, version=7.5.4)" license="(state=, expiry=0, license=false)" dashboard_name="Analytics Panel Example Dashboard" dashboard_uid=ZQZXRMXMk dashboard_timezone=browser user_id=1 user_login=admin user_email=admin@localhost user_name=admin user_theme=dark user_role=admin user_locale=en-US user_timezone=browser time_from=1618782134 time_to=1618803734 time_from_raw=now-6h time_to_raw=now timeorigin=1618799093 time=1618803740 examplevar="(label=An Example Label, type=custom, multi=true, count=2, values=[world,bar])"
+```
+
+## Additional Details
+
 ### Prometheus Accuracy
 
 Please be aware that if you use Prometheus, metrics will not be completely accurate. There are a few reasons for this.
