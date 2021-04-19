@@ -18,12 +18,11 @@ Analytics panel extends your dashboards by giving you full control of your user'
 - Timestamps
 - Session duration
 - Tab focused state
+- Selected variables
 - Username
 - User roles
 - Dashboard Name/ID
 - Instance info
-
-You might want to consider using this plugin until official support is implemented!
 
 ## Getting Started
 
