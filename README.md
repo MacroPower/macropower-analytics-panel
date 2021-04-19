@@ -44,7 +44,7 @@ This plugin's [example](https://github.com/MacroPower/macropower-analytics-panel
 
 #### Default
 
-Included in this plugin's repo is a simple [Go server](https://github.com/MacroPower/macropower-analytics-panel/tree/master/server) that requires no external dependencies. It can expose OpenMetrics and/or log sessions (using logfmt or JSON) to standard out. Its metrics are intended to be used with Prometheus; however, you can also use any OpenMetrics compatible metrics system (e.g. InfluxDB, Timescale). Logs work well in a container with the [Loki docker driver](https://grafana.com/docs/loki/latest/clients/docker-driver/), but any logging system that can parse structured logs will also work just fine.
+Included in this plugin's repo is a simple [Go server](https://github.com/MacroPower/macropower-analytics-panel/tree/master/server) that requires no external dependencies. It can expose data to systems supporting the OpenMetrics standard (e.g. Prometheus, InfluxDB 2.0) and/or your logging system of choice via stdout (e.g. Loki).
 
 Get started or test this option with `docker-compose -f example/server/docker-compose.yaml up`
 

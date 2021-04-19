@@ -52,6 +52,16 @@ Flags:
                                  ($DISABLE_VARIABLE_LOG).
 ```
 
+### Prometheus Accuracy
+
+Please be aware that if you use Prometheus, metrics will not be completely accurate. There are a few reasons for this.
+
+It's not possible for us to initialize metrics. This means that the first time there is a unique session in a given cache lifetime, the metrics will be initialized with values. This breaks Prometheus counters because null -> 1 is considered to be an increase of 0. Subsequent sessions (e.g. 1 -> 2) will be returned correctly.
+
+Prometheus will attempt to extrapolate correct rates, which does not work well at all for slow-moving counters. It will be common for metrics to be a shown as lot higher than they actually are. There's an [open proposal](https://github.com/prometheus/prometheus/issues/3806) to fix this, but it looks doubtful a solution will be implemented. You can use recording rules to fix this somewhat (see [this issue](https://github.com/prometheus/prometheus/issues/3746)), but results can still be incorrect if you drop a scrape, reset metrics, etc.
+
+If you care about this, these problems have been solved in other TSDBs. For example, InfluxDB, VictoriaMetrics, and Timescale among others.
+
 ### Session Timeout
 
 Session timeout is a useful feature that can prevent sessions from being represented as continuous, even if the user is inactive. It essentially limits the maximum calculated time between two heartbeats. For instance, consider the following sequence of events:
