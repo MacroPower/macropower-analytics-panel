@@ -1,0 +1,8 @@
+groups:
+  - name: grafana_analytics
+    interval: 60s
+    rules:
+      - record: :grafana_analytics_sessions_duration_seconds_total:increase60s
+        expr: increase(grafana_analytics_sessions_duration_seconds_total[60s]) / (132 / 99)
+      - record: :grafana_analytics_sessions_total:increase60s
+        expr: increase(grafana_analytics_sessions_total[60s]) / (132 / 99)

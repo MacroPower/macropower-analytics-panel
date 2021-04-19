@@ -34,7 +34,7 @@
         "content": "This dashboard is not monitored by macropower-analytics-panel.\n\nTo generate some activity, head over to: [Analytics Panel Example Dashboard](/d/ZQZXRMXMk/analytics-panel-example-dashboard?orgId=1)\n\nIt may take around a minute for activity to begin to show.",
         "mode": "markdown"
       },
-      "pluginVersion": "7.5.3",
+      "pluginVersion": "7.5.4",
       "targets": [
         {
           "queryType": "randomWalk",
@@ -66,7 +66,7 @@
       },
       "hiddenSeries": false,
       "id": 2,
-      "interval": "60s",
+      "interval": null,
       "legend": {
         "alignAsTable": true,
         "avg": false,
@@ -82,13 +82,13 @@
       },
       "lines": false,
       "linewidth": 1,
-      "maxDataPoints": null,
+      "maxDataPoints": 40,
       "nullPointMode": "null",
       "options": {
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.3",
+      "pluginVersion": "7.5.4",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -99,7 +99,7 @@
       "targets": [
         {
           "exemplar": true,
-          "expr": "round(sum by (dashboard_name) (increase(grafana_analytics_sessions_total[$__rate_interval])))",
+          "expr": "sum by (dashboard_name) (sum_over_time(:grafana_analytics_sessions_total:increase60s[$__interval]))",
           "interval": "",
           "legendFormat": "{{ dashboard_name }}",
           "queryType": "randomWalk",
@@ -169,7 +169,7 @@
       },
       "hiddenSeries": false,
       "id": 4,
-      "interval": "60s",
+      "interval": null,
       "legend": {
         "alignAsTable": true,
         "avg": false,
@@ -184,13 +184,13 @@
       },
       "lines": false,
       "linewidth": 1,
-      "maxDataPoints": null,
+      "maxDataPoints": 40,
       "nullPointMode": "null",
       "options": {
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.3",
+      "pluginVersion": "7.5.4",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -201,7 +201,7 @@
       "targets": [
         {
           "exemplar": true,
-          "expr": "sum by (dashboard_name) (increase(grafana_analytics_sessions_duration_seconds_total[$__rate_interval]))",
+          "expr": "sum by (dashboard_name) (sum_over_time(:grafana_analytics_sessions_duration_seconds_total:increase60s[$__interval]))",
           "interval": "",
           "legendFormat": "{{ dashboard_name }}",
           "queryType": "randomWalk",
@@ -269,7 +269,7 @@
       },
       "hiddenSeries": false,
       "id": 3,
-      "interval": "60s",
+      "interval": null,
       "legend": {
         "alignAsTable": true,
         "avg": false,
@@ -285,13 +285,13 @@
       },
       "lines": false,
       "linewidth": 1,
-      "maxDataPoints": null,
+      "maxDataPoints": 40,
       "nullPointMode": "null",
       "options": {
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.3",
+      "pluginVersion": "7.5.4",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -302,9 +302,9 @@
       "targets": [
         {
           "exemplar": true,
-          "expr": "round(sum by (user_name) (increase(grafana_analytics_sessions_total[$__rate_interval])))",
+          "expr": "sum by (user_name) (sum_over_time(:grafana_analytics_sessions_total:increase60s[$__interval]))",
           "interval": "",
-          "legendFormat": "{{ user_name}}",
+          "legendFormat": "{{ user_name }}",
           "queryType": "randomWalk",
           "refId": "A"
         }
@@ -372,7 +372,7 @@
       },
       "hiddenSeries": false,
       "id": 5,
-      "interval": "60s",
+      "interval": null,
       "legend": {
         "alignAsTable": true,
         "avg": false,
@@ -387,13 +387,13 @@
       },
       "lines": false,
       "linewidth": 1,
-      "maxDataPoints": null,
+      "maxDataPoints": 40,
       "nullPointMode": "null",
       "options": {
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.3",
+      "pluginVersion": "7.5.4",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -404,9 +404,9 @@
       "targets": [
         {
           "exemplar": true,
-          "expr": "sum by (user_name) (increase(grafana_analytics_sessions_duration_seconds_total[$__rate_interval]))",
+          "expr": "sum by (user_name) (sum_over_time(:grafana_analytics_sessions_duration_seconds_total:increase60s[$__interval]))",
           "interval": "",
-          "legendFormat": "{{ user_name}}",
+          "legendFormat": "{{ user_name }}",
           "queryType": "randomWalk",
           "refId": "A"
         }
@@ -468,5 +468,5 @@
   "timezone": "",
   "title": "Grafana Analytics",
   "uid": "IFquOMXGz",
-  "version": 2
+  "version": 3
 }

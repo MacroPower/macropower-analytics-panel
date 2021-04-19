@@ -31,6 +31,7 @@ services:
       - 9090:9090
     volumes:
       - ./prometheus.yaml:/etc/prometheus/prometheus.yaml
+      - ./rules.yaml:/etc/prometheus/rules.yaml
     command:
       - '--config.file=/etc/prometheus/prometheus.yaml'
     networks:
