@@ -52,6 +52,13 @@ Flags:
                                  ($DISABLE_VARIABLE_LOG).
 ```
 
+## Compatibility
+
+| Server | Panel |
+| ------ | ----- |
+|        | 1.x.x |
+| 0.0.1  | 2.0.0 |
+
 ## Examples
 
 ### Metrics
