@@ -1,0 +1,31 @@
+{
+  "type": "panel",
+  "name": "Analytics Panel",
+  "id": "macropower-analytics-panel",
+  "info": {
+    "description": "It's like Google Analytics, but for Grafana dashboards!",
+    "author": {
+      "name": "Jacob Colvin",
+      "url": "https://jacobcolvin.com"
+    },
+    "keywords": ["dashboard", "analytics", "user", "username", "reports", "report", "reporting", "track", "tracking"],
+    "logos": {
+      "small": "img/logo.svg",
+      "large": "img/logo.svg"
+    },
+    "links": [
+      {
+        "name": "Website",
+        "url": "https://github.com/MacroPower/macropower-analytics-panel"
+      }
+    ],
+    "screenshots": [],
+    "version": "2.0.0",
+    "updated": "2021-04-11"
+  },
+  "dependencies": {
+    "grafanaVersion": "7.x.x",
+    "grafanaDependency": ">=7.0.0",
+    "plugins": []
+  }
+}

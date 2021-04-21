@@ -1,0 +1,33 @@
+
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA512
+
+{
+  "manifestVersion": "2.0.0",
+  "signatureType": "community",
+  "signedByOrg": "macropower",
+  "signedByOrgName": "macropower",
+  "plugin": "macropower-analytics-panel",
+  "version": "2.0.0",
+  "time": 1618977662447,
+  "keyId": "7e4d0c6a708866e7",
+  "files": {
+    "img/logo.svg": "c82a984188d30c5d543c14465adf52601332db4579dd7fcf966d2bd8be933549",
+    "LICENSE": "189b1af95d661151e054cea10c91b3d754e4de4d3fecfb074c1fb29476f7167b",
+    "module.js": "a44815fc041ed1b5d263b58c22d37582da8d2204b90647a643289cbab2b14959",
+    "module.js.LICENSE.txt": "0d8f66cd4afb566cb5b7e1540c68f43b939d3eba12ace290f18abc4f4cb53ed0",
+    "module.js.map": "2c15bedfcb520025f178aa4e3073b33e5420765288048d8dccd052733ca06651",
+    "plugin.json": "b495cb51268e84649c0922b3158866eeac053c0b0111548e3d9bd075f2697351",
+    "README.md": "510152e8c4b00ca40f7a66441d57acd978285d23e3e2a00bc06f91a2a3c5d49f"
+  }
+}
+-----BEGIN PGP SIGNATURE-----
+Version: OpenPGP.js v4.10.1
+Comment: https://openpgpjs.org
+
+wqEEARMKAAYFAmB/o34ACgkQfk0ManCIZuf9ZQIGNmIgY9htjiwPhKMzfwpb
+hxBW79nJPMs2CuyJng2vlM64ouKKzNdp85/58jH6JlxgS/Xe3D93VOzbOLB1
+2goOstICCQEh4Klgr0MP3toFAE22ImmdK60PAjoTCzwa4Yd7GBCiLQOnTcaV
+jNjL63jkQEo9jMIEg1MB95YQCg1tMc29o/+ylw==
+=qQjv
+-----END PGP SIGNATURE-----
