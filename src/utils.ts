@@ -48,12 +48,12 @@ export function throwOnBadResponse(r: Response) {
 }
 
 export function getVariables(templateVars: VariableModel[]) {
-  const variables: Array<TemplateVariable> = templateVars.map((v: VariableModel) => {
+  const variables: TemplateVariable[] = templateVars.map((v: VariableModel) => {
     // Note: any because VariableModel does not define current
     const untypedVariableModel: any = v;
 
     let multi = false;
-    let value: Array<string> | string | null | undefined = untypedVariableModel?.current?.value;
+    let value: string[] | string | null | undefined = untypedVariableModel?.current?.value;
 
     if (typeof value === 'string' && value !== '') {
       value = [value];
