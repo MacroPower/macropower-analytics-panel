@@ -9,6 +9,7 @@
   },
   "scripts": {
     "build": "grafana-toolkit plugin:build",
+    "lint": "eslint --ignore-path .gitignore **/*.{js,jsx,ts,tsx}",
     "test": "grafana-toolkit plugin:test",
     "dev": "grafana-toolkit plugin:dev",
     "watch": "grafana-toolkit plugin:dev --watch",
@@ -20,13 +21,18 @@
   },
   "devDependencies": {
     "@grafana/data": "7.5.4",
+    "@grafana/eslint-config": "2.3.0",
     "@grafana/runtime": "7.5.4",
     "@grafana/toolkit": "7.5.4",
-    "@grafana/ui": "7.5.4"
+    "@grafana/ui": "7.5.4",
+    "@types/flat": "5.0.1",
+    "@types/uuid": "8.3.0",
+    "@typescript-eslint/eslint-plugin": "4.22.1",
+    "@typescript-eslint/parser": "4.22.1",
+    "eslint": "7.25.0",
+    "typescript": "4.2.4"
   },
   "dependencies": {
-    "@types/flat": "^5.0.1",
-    "@types/uuid": "^8.3.0",
     "flat": "^5.0.2",
     "uuid": "^8.3.2"
   }

@@ -8,7 +8,7 @@ export type TemplateVariable = {
   label: string | null;
   type: VariableType;
   multi: boolean;
-  values: Array<string>;
+  values: string[];
 };
 
 export type EventType = 'start' | 'heartbeat' | 'end';
