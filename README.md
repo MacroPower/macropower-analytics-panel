@@ -1,11 +1,14 @@
 # macropower-analytics-panel
 
-[![Downloads](https://img.shields.io/badge/dynamic/json?color=green&label=downloads&query=%24.downloads&url=https%3A%2F%2Fgrafana.com%2Fapi%2Fplugins%2Fmacropower-analytics-panel)](https://grafana.com/grafana/plugins/macropower-analytics-panel)
-![Grafana Dependency](https://img.shields.io/badge/dynamic/json?color=orange&label=grafana%20dependency&query=%24.json.dependencies.grafanaDependency&url=https%3A%2F%2Fgrafana.com%2Fapi%2Fplugins%2Fmacropower-analytics-panel)
-![Version](https://img.shields.io/badge/dynamic/json?color=blue&label=version&query=%24.version&url=https%3A%2F%2Fgrafana.com%2Fapi%2Fplugins%2Fmacropower-analytics-panel)
-![Updated](https://img.shields.io/badge/dynamic/json?color=lightgray&label=updated&query=%24.json.info.updated&url=https%3A%2F%2Fgrafana.com%2Fapi%2Fplugins%2Fmacropower-analytics-panel)
+[![Build](https://github.com/MacroPower/macropower-analytics-panel/workflows/CI/badge.svg)](https://github.com/MacroPower/macropower-analytics-panel/actions?query=workflow%3A%22CI%22)
+[![Release](https://github.com/MacroPower/macropower-analytics-panel/workflows/Release/badge.svg)](https://github.com/MacroPower/macropower-analytics-panel/actions?query=workflow%3A%22Release%22)
+[![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/MacroPower/macropower-analytics-panel?label=latest&logo=github)](https://github.com/MacroPower/macropower-analytics-panel/releases)
+[![Marketplace](https://img.shields.io/badge/dynamic/json?logo=grafana&color=F47A20&label=marketplace&prefix=v&query=%24.items%5B%3F%28%40.slug%20%3D%3D%20%22macropower-analytics-panel%22%29%5D.version&url=https%3A%2F%2Fgrafana.com%2Fapi%2Fplugins)](https://grafana.com/grafana/plugins/macropower-analytics-panel)
+[![Downloads](https://img.shields.io/badge/dynamic/json?logo=grafana&color=F47A20&label=downloads&query=%24.items%5B%3F%28%40.slug%20%3D%3D%20%22macropower-analytics-panel%22%29%5D.downloads&url=https%3A%2F%2Fgrafana.com%2Fapi%2Fplugins)](https://grafana.com/grafana/plugins/macropower-analytics-panel)
 
 Grafana panel that lets you measure dashboard utilization. It's like Google Analytics, but for Grafana dashboards!
+
+![Example Analytics](https://raw.githubusercontent.com/MacroPower/macropower-analytics-panel/master/example/screenshot.png)
 
 ## Features
 
