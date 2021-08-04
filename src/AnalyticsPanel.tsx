@@ -68,7 +68,7 @@ export class AnalyticsPanel extends PureComponent<Props> {
     if (isNew(location.pathname)) {
       const error = new Error('Dashboard is new and unsaved, and thus no ID was found.');
       this.setState({ error });
-    } else if (!isValidUrl(server)) {
+    } else if (!isValidUrl(server, location.origin)) {
       const error = new Error(`"${server}" is not a valid URL.`);
       this.setState({ error });
     } else {

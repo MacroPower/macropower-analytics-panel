@@ -27,9 +27,9 @@ export function getTimestamp() {
   return unixFromMs(new Date().getTime());
 }
 
-export function isValidUrl(str: string) {
+export function isValidUrl(str: string, base?: string | URL | undefined) {
   try {
-    new URL(str);
+    new URL(str, base);
   } catch (_) {
     return false;
   }
