@@ -1,6 +1,6 @@
 {
   "name": "analytics-panel",
-  "version": "2.0.1",
+  "version": "2.1.0",
   "description": "Grafana Analytics Panel",
   "license": "GPL-2.0",
   "repository": {

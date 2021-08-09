@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.1.0 (2021-08-09)
+
+- Adds support for relative URLs in endpoint settings (#23). Thanks to: @mig4
+
 ## 2.0.1 (2021-07-26)
 
 - Use Grafana's eslint config (#20).
