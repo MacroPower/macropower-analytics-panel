@@ -83,7 +83,7 @@ While you cannot place the panel inside a row, you can take several steps to mak
 - In Visualization, set Hidden to True.
 - In General Settings, set Transparent to True.
 - In General Settings, set Title/Description to nothing. Alternatively, you can set a Title/Description and use this panel as a title, separator, or footer.
-- Save and make the panel as small as you want. I found that 0 height, 100% width works well.
+- Save and make the panel as small as you want. I found that 1 height, 100% width works well.
 
 ## Default Settings
 
