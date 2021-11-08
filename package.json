@@ -20,7 +20,7 @@
     "url": "https://jacobcolvin.com"
   },
   "devDependencies": {
-    "@grafana/data": "8.0.6",
+    "@grafana/data": "8.2.3",
     "@grafana/eslint-config": "2.5.0",
     "@grafana/runtime": "8.0.6",
     "@grafana/toolkit": "8.0.6",
