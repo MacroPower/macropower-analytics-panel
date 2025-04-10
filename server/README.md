@@ -50,6 +50,14 @@ Flags:
                                  ($DISABLE_SESSION_LOG).
       --disable-variable-log     Disables logging variables to the console
                                  ($DISABLE_VARIABLE_LOG).
+      --dashboard-update-token   Service account token in Grafana to enable automatic dashboard updates
+                                 ($DASHBOARD_UPDATE_TOKEN)
+      --grafana-url              URL for your Grafana instance, used for automatic dashboard updates
+                                 ($GRAFANA_URL)
+      --timeout                  Timeout for automatic dashboard update feature
+                                 ($TIMEOUT)
+      --dashboard-filter         Limit automatic dashboard updating to singular dashboard, useful for testing
+                                 ($DASHBOARD_FILTER)
 ```
 
 ## Compatibility
@@ -112,3 +120,11 @@ Max cache size is a compromise that prevents needing to run a dedicated database
 If you happen to reset memory or restart when session data exists, but has not yet been scraped, this session data will be lost. For existing sessions that are "in progress", the maximum accuracy loss will never be greater than the session timeout duration.
 
 Generally, you should consider the amount of traffic you're generating, and try to ensure that sessions remain cached for at least 24 hours (ideally longer), while also keeping in mind that more sessions in memory corresponds to a higher memory footprint.
+
+### Automated dashboard updates
+
+Optionally you can automatically add analytic panels to your dashboards. For this you need to provide 2 values:
+ - Grafana instance URL - `--grafana-url` 
+ - Service account token - `--dashboard-update-token`
+
+Upon providing those values the feature will be enabled. By default there's a ticker running every 24 hours. So once a day the updater will check if there are any new panels that need to be updated and will update. You can also trigger update manually by visiting `/patch-dashboards` endpoint.
